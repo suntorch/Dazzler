@@ -14,7 +14,7 @@ namespace Peppy
 {
    public static class Mapper
    {
-      #region internal - varibales
+      #region internal - variables
       internal static Dictionary<Type, IParameterHandler> _objectHandlers = new Dictionary<Type, IParameterHandler>();
       internal static Dictionary<Type, ITypeHandler> _valueHandlers = new Dictionary<Type, ITypeHandler>();
       internal static Dictionary<Type, DbType> _typeMap = new Dictionary<Type, DbType>()
