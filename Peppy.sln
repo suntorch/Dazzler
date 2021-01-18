@@ -5,7 +5,12 @@ VisualStudioVersion = 16.0.30309.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Peppy", "Peppy\Peppy.csproj", "{CD81DBC2-2A44-4E49-9BE3-11124A61301C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peppy.Test", "Peppy.Test\Peppy.Test.csproj", "{26865E5A-A9EC-417C-87D6-60B845FA9C8D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Peppy.Test", "Peppy.Test\Peppy.Test.csproj", "{26865E5A-A9EC-417C-87D6-60B845FA9C8D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{953DBDE3-35AE-41CC-8A47-59511DD50118}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
