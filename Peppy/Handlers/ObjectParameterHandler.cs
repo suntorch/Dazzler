@@ -4,7 +4,7 @@ using Peppy.Interfaces;
 
 namespace Peppy.Handlers
 {
-   public class DynamicParameterHandler : IParameterHandler
+   public class ObjectParameterHandler : IParameterHandler
    {
       public Type DesiredType { get; } = typeof(object);
 
@@ -13,12 +13,9 @@ namespace Peppy.Handlers
          if (parameterObject == null || action == null) return;
 
          Type type = parameterObject.GetType();
-         PropertyInfo[] properties = type.GetProperties();
-         for (int i = 0; i < properties.Length; i++)
+         foreach (PropertyInfo pi in type.GetProperties())
          {
-            PropertyInfo pi = properties[i];
-
-            // exceptions
+            // exception if member implemented IgnoreFetch attribute.
             if (pi.GetCustomAttribute<IgnoreFetchAttribute>(false) != null) continue; // skip
 
             action?.Invoke(pi.Name, pi.GetValue(parameterObject), pi.PropertyType);

@@ -9,7 +9,7 @@ namespace Peppy.Interfaces
    public interface IParameterHandler
    {
       /// <summary>
-      /// Implement this interface to speficy a type of the ParameterObject.
+      /// Implement this interface to specify a type of the ParameterObject.
       /// </summary>
       Type DesiredType { get; }
 

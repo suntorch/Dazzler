@@ -1,7 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
+using System.Collections.Generic;
 using Peppy.Interfaces;
+
 
 namespace Peppy
 {
@@ -10,14 +11,7 @@ namespace Peppy
    /// </summary>
    internal class ParameterLookup
    {
-      internal Dictionary<IDbDataParameter, PropertyData> map;
+      internal Dictionary<IDbDataParameter, ParameterLookupData> map;
       internal IParameterHandler parameterHandler;
-   }
-
-   internal class PropertyData
-   {
-      internal string name;
-      internal Type type;
-      internal ITypeHandler typeHandler;
    }
 }

@@ -7,9 +7,15 @@ using System.Reflection;
 using System.Text;
 using System.Linq;
 
-namespace Peppy.Handlers
+namespace Peppy.Readers
 {
-   public class QueryReader<T>
+   /// <summary>
+   /// This reader reads a records from IDbCommand and 
+   /// maps a data to the T template object which can be
+   /// Typed-Class or Anonymous class object.
+   /// </summary>
+   /// <typeparam name="T"></typeparam>
+   public class QueryGenericReader<T>
    {
       public List<T> Read(IDbCommand command, ExecuteArgs args)
       {

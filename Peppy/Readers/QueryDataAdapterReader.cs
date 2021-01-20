@@ -5,9 +5,9 @@ using System.Data.Common;
 using Peppy.Interfaces;
 
 
-namespace Peppy.Handlers
+namespace Peppy.Readers
 {
-   public class DataAdapterReader
+   public class QueryDataAdapterReader
    {
       public DataSet ReadDatSet(IDbCommand command, ExecuteArgs args, ResultInfo ri)
       {
