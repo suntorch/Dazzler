@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30309.148
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dazzler", "Dazzler\Dazzler.csproj", "{CD81DBC2-2A44-4E49-9BE3-11124A61301C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dazzler.Test", "Dazzler.Test\Dazzler.Test.csproj", "{26865E5A-A9EC-417C-87D6-60B845FA9C8D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{953DBDE3-35AE-41CC-8A47-59511DD50118}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CD81DBC2-2A44-4E49-9BE3-11124A61301C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD81DBC2-2A44-4E49-9BE3-11124A61301C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD81DBC2-2A44-4E49-9BE3-11124A61301C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD81DBC2-2A44-4E49-9BE3-11124A61301C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{26865E5A-A9EC-417C-87D6-60B845FA9C8D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{26865E5A-A9EC-417C-87D6-60B845FA9C8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{26865E5A-A9EC-417C-87D6-60B845FA9C8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{26865E5A-A9EC-417C-87D6-60B845FA9C8D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {42BAAD79-2AC8-46F4-97C7-B2A5F8A028D6}
+	EndGlobalSection
+EndGlobal
