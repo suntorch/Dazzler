@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using Peppy.Interfaces;
+using Peppy.Models;
 
 
 namespace Peppy.Readers
 {
    public class QueryDataAdapterReader
    {
-      public DataSet ReadDatSet(IDbCommand command, ExecuteArgs args, ResultInfo ri)
+      public DataSet ReadDatSet(IDbCommand command, CommandEventArgs args, ResultInfo ri)
       {
          DataSet ds = new DataSet();
 
@@ -28,7 +28,7 @@ namespace Peppy.Readers
          return ds;
       }
 
-      public DataTable ReadDataTable(IDbCommand command, ExecuteArgs args, ResultInfo ri)
+      public DataTable ReadDataTable(IDbCommand command, CommandEventArgs args, ResultInfo ri)
       {
          DataTable dt = new DataTable();
          using (var adapter = DbProviderFactories.GetFactory((DbConnection)command.Connection).CreateDataAdapter())

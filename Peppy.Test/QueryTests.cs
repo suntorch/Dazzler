@@ -1,6 +1,8 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Data;
+using Peppy.Models;
+
 
 namespace Peppy.Test
 {

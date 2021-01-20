@@ -1,14 +1,8 @@
 ﻿using System;
 using System.Data;
-using System.Data.Common;
-using System.Diagnostics;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
-using System.Reflection;
-using System.Linq;
-using System.Dynamic;
 using Peppy.Interfaces;
-using Peppy.Handlers;
+using Peppy.Models;
 using Peppy.Readers;
 
 namespace Peppy
@@ -18,14 +12,14 @@ namespace Peppy
 
       #region public - events
 
-      public delegate void ExecutingDelegate(EventArgs args);
-      public delegate void ExecutedDelegate(EventArgs args, ResultInfo result);
+      public delegate void ExecutingDelegate(CommandEventArgs args);
+      public delegate void ExecutedDelegate(CommandEventArgs args, ResultInfo result);
 
       public static event ExecutingDelegate ExecutingEvent;
       public static event ExecutedDelegate ExecutedEvent;
 
-      public static void OnExecutingEvent(EventArgs args) => ExecutingEvent?.Invoke(args);
-      public static void OnExecutedEvent(EventArgs args, ResultInfo result) => ExecutedEvent?.Invoke(args, result);
+      public static void OnExecutingEvent(CommandEventArgs args) => ExecutingEvent?.Invoke(args);
+      public static void OnExecutedEvent(CommandEventArgs args, ResultInfo result) => ExecutedEvent?.Invoke(args, result);
 
       #endregion
 
@@ -48,7 +42,7 @@ namespace Peppy
 
 
 
-      public static List<T> Query<T>(this IDbConnection conn, ExecuteArgs args, ResultInfo ri)
+      public static List<T> Query<T>(this IDbConnection conn, CommandArgs args, ResultInfo ri)
          => ExecuteImpl<T>(conn, args, ri, new QueryGenericReader<T>());
 
 
@@ -63,7 +57,7 @@ namespace Peppy
          object state = null,
          ResultInfo ri = null)
 
-         => Query<T>(conn, new ExecuteArgs()
+         => Query<T>(conn, new CommandArgs()
          {
             Kind = kind,
             Sql = sql,
@@ -90,7 +84,7 @@ namespace Peppy
 
 
 
-      public static int NonQuery(this IDbConnection conn, ExecuteArgs args, ResultInfo ri)
+      public static int NonQuery(this IDbConnection conn, CommandArgs args, ResultInfo ri)
          => ExecuteImpl(conn, args, ri);
 
 
@@ -103,7 +97,7 @@ namespace Peppy
          object state = null,
          ResultInfo ri = null)
 
-         => NonQuery(conn, new ExecuteArgs()
+         => NonQuery(conn, new CommandArgs()
          {
             Kind = kind,
             Sql = sql,

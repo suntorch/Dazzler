@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Reflection;
 using System.Linq;
 using System.Dynamic;
+using Peppy.Models;
 using Peppy.Interfaces;
 using Peppy.Handlers;
 using Peppy.Readers;
@@ -246,14 +247,14 @@ namespace Peppy
       /// <param name="args"></param>
       /// <param name="readerAction"></param>
       /// <returns></returns>
-      private static List<T> ExecuteImpl<T>(this IDbConnection conn, ExecuteArgs args, ResultInfo ri, Func<IDbCommand, ExecuteArgs, ParameterLookup, List<T>> readerAction)
+      private static List<T> ExecuteImpl<T>(this IDbConnection conn, CommandArgs args, ResultInfo ri, Func<IDbCommand, CommandArgs, ParameterLookup, List<T>> readerAction)
       {
          List<T> result = null;
-         EventArgs eventArgs = new EventArgs();
 
          // validates some input parameters.
          if (args?.Sql == null) throw new ArgumentNullException("Sql");
 
+         CommandEventArgs eventArgs = new CommandEventArgs();
          Utility.Copy(args, eventArgs);
 
 
@@ -304,7 +305,7 @@ namespace Peppy
       /// <param name="args"></param>
       /// <param name="reader"></param>
       /// <returns></returns>
-      private static List<T> ExecuteImpl<T>(this IDbConnection conn, ExecuteArgs args, ResultInfo ri, QueryGenericReader<T> reader)
+      private static List<T> ExecuteImpl<T>(this IDbConnection conn, CommandArgs args, ResultInfo ri, QueryGenericReader<T> reader)
       {
          return ExecuteImpl<T>(conn, args, ri, (command, args, lookup) => reader?.Read(command, args));
       }
@@ -317,7 +318,7 @@ namespace Peppy
       /// <param name="conn"></param>
       /// <param name="args"></param>
       /// <returns></returns>
-      private static T ExecuteImpl<T>(this IDbConnection conn, ExecuteArgs args, ResultInfo ri)
+      private static T ExecuteImpl<T>(this IDbConnection conn, CommandArgs args, ResultInfo ri)
       {
          return ExecuteImpl<T>(conn, args, ri, (command, args, lookup) =>
          {
@@ -334,7 +335,7 @@ namespace Peppy
       /// <param name="conn"></param>
       /// <param name="args"></param>
       /// <returns></returns>
-      private static int ExecuteImpl(this IDbConnection conn, ExecuteArgs args, ResultInfo ri)
+      private static int ExecuteImpl(this IDbConnection conn, CommandArgs args, ResultInfo ri)
       {
          return ExecuteImpl<int>(conn, args, ri, (command, args, lookup) =>
          {

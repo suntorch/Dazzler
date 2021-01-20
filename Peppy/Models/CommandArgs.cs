@@ -4,7 +4,7 @@ using System.Data;
 
 namespace Peppy.Models
 {
-   public class ExecuteArgs : CommandInfo
+   public class CommandArgs : CommandInfo
    {
       public IDbTransaction Transaction { get; set; }
 

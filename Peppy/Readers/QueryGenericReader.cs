@@ -1,11 +1,8 @@
-﻿using Peppy.Interfaces;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Common;
 using System.Reflection;
-using System.Text;
-using System.Linq;
+using Peppy.Models;
 
 namespace Peppy.Readers
 {
@@ -17,7 +14,7 @@ namespace Peppy.Readers
    /// <typeparam name="T"></typeparam>
    public class QueryGenericReader<T>
    {
-      public List<T> Read(IDbCommand command, ExecuteArgs args)
+      public List<T> Read(IDbCommand command, CommandArgs args)
       {
          List<T> result = new List<T>();
 

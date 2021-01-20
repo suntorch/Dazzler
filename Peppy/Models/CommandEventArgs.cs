@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Peppy.Models
 {
-   public class EventArgs : CommandInfo
+   public class CommandEventArgs : CommandInfo
    {
    }
 }

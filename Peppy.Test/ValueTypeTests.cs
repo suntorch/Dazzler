@@ -2,6 +2,8 @@
 using System;
 using System.Data;
 using System.Linq;
+using Peppy.Models;
+
 
 namespace Peppy.Test
 {
