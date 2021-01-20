@@ -236,7 +236,72 @@ namespace Peppy
       }
       #endregion
 
+      #region static constructor
+
+      static Mapper()
+      {
+         // parameter object handler
+         Use<object>(new ObjectParameterHandler()); // default handler.
+         Use<ExpandoObject>(new ExpandoParameterHanlder());
+         Use<Dictionary<string, object>>(new DictionaryParameterHandler());
+
+         // value type handler
+         Use<object>(new ValueTypeHandler());  // default value type handler.
+         Use<DataTable>(new DataTableValueHandler());
+      }
+
+      #endregion
+
       #region internal - core executors
+
+
+      /// <summary>
+      /// Executes non-query command and returns number of rows affected.
+      /// </summary>
+      /// <param name="conn"></param>
+      /// <param name="args"></param>
+      /// <returns></returns>
+      private static int ExecuteNonQueryImpl(this IDbConnection conn, CommandArgs args, ResultInfo ri)
+      {
+         return ExecuteImpl<int>(conn, args, ri, (command, args, lookup) =>
+         {
+            List<int> result = new List<int>();
+            result.Add(command.ExecuteNonQuery());
+            return result;
+         }).FirstOrDefault();
+      }
+
+
+      /// <summary>
+      /// Executes the query and returns only the first column of the first row in the resultset returned by the query.
+      /// </summary>
+      /// <typeparam name="T"></typeparam>
+      /// <param name="conn"></param>
+      /// <param name="args"></param>
+      /// <returns></returns>
+      private static T ExecuteScalarImpl<T>(this IDbConnection conn, CommandArgs args, ResultInfo ri)
+      {
+         return ExecuteImpl<T>(conn, args, ri, (command, args, lookup) =>
+         {
+            List<T> result = new List<T>();
+            result.Add((T)new ValueTypeHandler().Parse(command.ExecuteScalar(), typeof(T)));
+            return result;
+         }).FirstOrDefault();
+      }
+
+
+      /// <summary>
+      /// Executes the query and returns resultset returned by the query.
+      /// </summary>
+      /// <typeparam name="T"></typeparam>
+      /// <param name="conn"></param>
+      /// <param name="args"></param>
+      /// <param name="reader"></param>
+      /// <returns></returns>
+      private static List<T> ExecuteImpl<T>(this IDbConnection conn, CommandArgs args, ResultInfo ri, QueryGenericReader<T> reader)
+      {
+         return ExecuteImpl<T>(conn, args, ri, (command, args, lookup) => reader?.Read(command, args));
+      }
 
 
       /// <summary>
@@ -253,6 +318,7 @@ namespace Peppy
 
          // validates some input parameters.
          if (args?.Sql == null) throw new ArgumentNullException("Sql");
+
 
          CommandEventArgs eventArgs = new CommandEventArgs();
          Utility.Copy(args, eventArgs);
@@ -275,13 +341,14 @@ namespace Peppy
 
             var stopwatch = Stopwatch.StartNew();
 
-            // executes a command.
+            // invokes an action to handle databas result.
             result = readerAction?.Invoke(command, args, lookup);
 
             // measures some performance.
             stopwatch.Stop();
             if (ri != null)
             {
+               ri.Rows = result;
                ri.Duration = stopwatch.ElapsedMilliseconds;
                ri.AffectedRows = result?.Count ?? 0;
             }
@@ -297,71 +364,9 @@ namespace Peppy
       }
 
 
-      /// <summary>
-      /// Executes the query and returns resultset returned by the query.
-      /// </summary>
-      /// <typeparam name="T"></typeparam>
-      /// <param name="conn"></param>
-      /// <param name="args"></param>
-      /// <param name="reader"></param>
-      /// <returns></returns>
-      private static List<T> ExecuteImpl<T>(this IDbConnection conn, CommandArgs args, ResultInfo ri, QueryGenericReader<T> reader)
-      {
-         return ExecuteImpl<T>(conn, args, ri, (command, args, lookup) => reader?.Read(command, args));
-      }
-
-
-      /// <summary>
-      /// Executes the query and returns only the first column of the first row in the resultset returned by the query.
-      /// </summary>
-      /// <typeparam name="T"></typeparam>
-      /// <param name="conn"></param>
-      /// <param name="args"></param>
-      /// <returns></returns>
-      private static T ExecuteImpl<T>(this IDbConnection conn, CommandArgs args, ResultInfo ri)
-      {
-         return ExecuteImpl<T>(conn, args, ri, (command, args, lookup) =>
-         {
-            List<T> result = new List<T>();
-            result.Add((T)new ValueTypeHandler().Parse(command.ExecuteScalar(), typeof(T)));
-            return result;
-         }).FirstOrDefault();
-      }
-
-
-      /// <summary>
-      /// Executes non-query command and returns number of rows affected.
-      /// </summary>
-      /// <param name="conn"></param>
-      /// <param name="args"></param>
-      /// <returns></returns>
-      private static int ExecuteImpl(this IDbConnection conn, CommandArgs args, ResultInfo ri)
-      {
-         return ExecuteImpl<int>(conn, args, ri, (command, args, lookup) =>
-         {
-            List<int> result = new List<int>();
-            result.Add(command.ExecuteNonQuery());
-            return result;
-         }).FirstOrDefault();
-      }
-
       #endregion
 
-      #region static constructor
 
-      static Mapper()
-      {
-         // parameter object handler
-         Use<object>(new ObjectParameterHandler()); // default handler.
-         Use<ExpandoObject>(new ExpandoParameterHanlder());
-         Use<Dictionary<string, object>>(new DictionaryParameterHandler());
-
-         // value type handler
-         Use<object>(new ValueTypeHandler());  // default value type handler.
-         Use<DataTable>(new DataTableValueHandler());
-      }
-
-      #endregion
 
    }
 }

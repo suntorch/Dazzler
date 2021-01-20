@@ -21,5 +21,10 @@ namespace Peppy.Models
       /// Indicates the result came from cache storage instead of database.
       /// </summary>
       public bool FromCache { get; set; }
+
+      /// <summary>
+      /// Gets a returning rows.
+      /// </summary>
+      public object Rows { get; set; }
    }
 }
