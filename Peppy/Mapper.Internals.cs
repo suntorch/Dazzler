@@ -65,20 +65,6 @@ namespace Peppy
 
       #region internal - type handlers
 
-      private static FieldInfo GetAnonymousField(object instance, string name)
-      {
-         Type type = instance.GetType();
-         const BindingFlags FieldFlags = BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.IgnoreCase;
-         string[] BackingFieldFormats = { "<{0}>i__Field", "<{0}>" };
-         var backingFieldNames = BackingFieldFormats.Select(x => string.Format(x, name)).ToList();
-         var fi = type
-             .GetFields(FieldFlags)
-             .FirstOrDefault(f => backingFieldNames.Contains(f.Name));
-
-         return fi;
-      }
-
-
       private static bool ParsePropertyName(string text, out string name, out ParameterDirection direction, out int size)
       {
          name = text; size = 0; direction = ParameterDirection.Input;

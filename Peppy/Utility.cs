@@ -428,7 +428,7 @@ namespace Peppy
       static public PropertyInfo GetProperty(object instance, string name) => instance.GetType().GetProperty(name);
       static public void SetPropertyValue(object instance, string name, object value) => GetProperty(instance, name)?.SetValue(instance, value);
 
-      static public FieldInfo GetBackingField(object instance, string name)
+      static public FieldInfo GetBackingFieldInfo(object instance, string name)
       {
          // <>f__AnonymousType5`2            Anonymous object type name.
          // <FirstName>i__Field              Anonymous backing field name.
@@ -446,7 +446,7 @@ namespace Peppy
 
       static public bool SetBackiingFieldValue(object instance, string name, object value)
       {
-         FieldInfo fi = GetBackingField(instance, name);
+         FieldInfo fi = GetBackingFieldInfo(instance, name);
          if (fi == null) return false;
          fi.SetValue(instance, value);
          return true;
