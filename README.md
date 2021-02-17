@@ -6,23 +6,23 @@ Dazzler is a NuGet data access library that extends IDbConnection interface.
 - lightweight and high performance. :rocket: 
 - mapping a query result :scroll: to **`strongly-typed`** object.
 - 2-way binding :link: a class property to **`input`** and **`output`** parameters.
-- *
 
 
 
 ## Parameterized Query
 A **Strongly-Typed**, **Anonymous** and **ExpandoObject** object can be passed as query parameters
 and a property name should match with query parameter name in order to bind it. 
-After a query is executed, Output and Function Return parameter will automatically takes 
-the value that is returned by a query. You don''t have to do any extra operation. :+1:
+After a query is executed, **Output** and **Function Return** parameter will automatically take 
+the value that is returned by a query. You don't have to do any extra operation. :+1:
 
 There are 2 methods to specify a direction of the query parameter.
 
 - **`DirectionAttribute`** attribute class.
-- special **`suffixes`** of the property name.
+- special **`suffixes`** for the property name.
 
-If you use Anonymous class type object, it does not allow any attribute and you will have to use
-**suffixes** in order to specify a direction.
+For the **strongly-typed** class type, both methods can be used.
+But, Anonymous class type does not allow any attribute implementation, 
+therefore, you will have to use **suffixes** in order to specify a direction.
 
 
 
@@ -46,7 +46,7 @@ A suffix consists of the following components:
 Default direction is always **input** and no need to specify, but you could.
 
 Using Anonymous class type:
-```csharp
+```C#
 var args = new
 {
    value1 = 999, // same as value1__in = 999
@@ -58,7 +58,7 @@ Assert.AreEqual(args.value1, args.value2__out, "Invalid output value.");
 ```
 
 Using Strongly-Typed class type with suffixes:
-```csharp
+```C#
 public class ModelClass
 {
    public int value1 { get; set; }
@@ -66,7 +66,7 @@ public class ModelClass
 };
 ```
 
-```csharp
+```C#
 ModelClass args = new ModelClass()
 {
    value1 = 999,
@@ -78,7 +78,7 @@ Assert.AreEqual(args.value1, args.value2__out, "Invalid output value.");
 ```
 
 Using Strongly-Typed class type with attribute:
-```csharp
+```C#
 public class ModelClass
 {
    public int value1 { get; set; }
@@ -87,7 +87,7 @@ public class ModelClass
    public int value2 { get; set; }
 };
 ```
-```csharp
+```C#
 ModelClass args = new ModelClass()
 {
    value1 = 999,
@@ -102,10 +102,10 @@ Assert.AreEqual(args.value1, args.value2, "Invalid output value.");
 ## Execute Commands
 You can pass input parameters and fetch records and bring back all output parameter values.
 
-```SQL
+```TSQL
 CREATE OR ALTER PROCEDURE MyStoredProcedure
-	@Name varchar(50),
-	@Age int,
+   @Name varchar(50),
+   @Age int,
    @Value int
 AS
 BEGIN
@@ -113,11 +113,11 @@ BEGIN
    set @Value = 99
 
    -- any returning query records.
-	select @Name Name, @Age Age
+   select @Name Name, @Age Age
 END
 ```
 
-```csharp
+```C#
 var args = new
 {
    Name = "John",
@@ -135,7 +135,7 @@ Assert.AreEqual(99, args.Value__out, "Invalid output value.");
 ## Paging
 It allows to read a some count of records from given offset position.
 
-```csharp
+```C#
 string sql = "select Age from ( values (1),(2),(3),(4),(5),(6),(7) ) as tmp (Age)";
 
 var result = connection.Query<ModelClass>(CommandType.Text, sql, offset: 2, limit: 2);
