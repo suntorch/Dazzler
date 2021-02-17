@@ -7,5 +7,9 @@ namespace Dazzler.Models
 {
    public class CommandEventArgs : CommandInfo
    {
+      /// <summary>
+      /// Specifies to reject the execution.
+      /// </summary>
+      public bool Cancel { get; set; }
    }
 }

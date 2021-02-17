@@ -3,38 +3,105 @@
 ## Features
 Dazzler is a NuGet data access library that extends IDbConnection interface.
 
-:+1: lightweigth and high performance.
-
-:+1: mapping a query result to **strongly-typed** object.
-
-:+1: 2-way binding a class property to **input** and **output* parameters.
-
-:+1: *
-
+- :+1: lightweight and high performance. :rocket: 
+- :+1: mapping a query result :scroll: to **`strongly-typed`** object.
+- :+1: 2-way binding :link: a class property to **`input`** and **`output`** parameters.
+- :+1: *
 
 
 
 ## Parameterized Query
-Query parameter can be given by class type such as Strongly-Typed, Anonymous or ExpandoObject.
-A property name of the parameter object should match with query parameter name in order to bind it.
+A Strongly-Typed, Anonymous and ExpandoObject object can be passed as query parameters
+and a property name should match with query parameter name in order to bind it.
 
-There are 2 different methods to specify a direction of the query parameter.
+There are 2 methods to specify a direction of the query parameter.
 
-- **DirectionAttribute** attribute class.
-- special **suffixes** on the property name.
+- **`DirectionAttribute`** attribute class.
+- special **`suffixes`** on the property name.
 
-If you use Anonymous class object, it does not allow any attribute and you will have to use
+If you use Anonymous class type object, it does not allow any attribute and you will have to use
 **suffixes** in order to specify a direction.
 
+### Property Name Suffixes
+Suffix format is **PropertyName`[__in|out|ret[size]]`**.
 
-### Input Parameters
-Default parameter direction will be **input** if it is not specified.
+Here:
+| Component | Description |
+| --- | --- |
+|`__`| an identifiers of the suffix. (double Low Line '0x5F')
+|`in`| specifies as **input** parameter.
+|`out`| specifies as **output** parameter.
+|`inout`| specifies as **input** and **output** parameter.
+|`ret`| specifies as **return** parameter. Used to call database funciton.
 
-### Output/Return Parameters
+
+
+### Input/Output Parameters
+Default direction is always **input** and no need to specify, but you could.
+
+Using Anonymous class type:
+```csharp
+var args = new
+{
+   value1 = 999, // same as value1__in = 999
+   value2__out = 0
+};
+
+var result = connection.NonQuery(CommandType.Text, $"set @value2=@value1", args);
+Assert.AreEqual(args.value1, args.value2__out, "Invalid output value.");
+```
+
+Using Strongly-Typed class type with suffixes:
+```csharp
+public class ModelClass
+{
+   public int value1 { get; set; }
+   public int value2__out { get; set; }
+};
+```
+
+```csharp
+ModelClass args = new ModelClass()
+{
+   value1 = 999,
+   value2__out = 0
+};
+
+var result = connection.NonQuery(CommandType.Text, $"set @value2=@value1", args);
+Assert.AreEqual(args.value1, args.value2__out, "Invalid output value.");
+```
+
+Using Strongly-Typed class type with attribute:
+```csharp
+public class ModelClass
+{
+   public int value1 { get; set; }
+
+   [Direction(Direction.Output)]
+   public int value2 { get; set; }
+};
+```
+```csharp
+ModelClass args = new ModelClass()
+{
+   value1 = 999,
+   value2 = 0
+};
+
+var result = connection.NonQuery(CommandType.Text, $"set @value2=@value1", args);
+Assert.AreEqual(args.value1, args.value2, "Invalid output value.");
+```
+
+
 
 
 ## Execution Events
-It has the following **pre** and **post** events that can globally control and monitor any execution.
+It has the following **pre** and **post** events that enable to control and monitor any database operations globally.
+
+- ExecutingEvent(CommandEventArgs args)
+- ExecutedEvent(CommandEventArgs args, ResultInfo result)
+
+
 The use cases can be as follows:
 
 - to log all database operations.
@@ -45,13 +112,13 @@ The use cases can be as follows:
 It works across all .NET ADO providers including SQL Server, MySQL, Firebird, PostgreSQL and Oracle.
 
 
-## Do you have a comprehensive list of examples?
-You can see and learn from [test project](https://github.com/suntorch/dazzler.test).
+## Examples
+You can see and learn from the test project [Dazzler.Test](https://github.com/suntorch/dazzler.test).
 
 
 
 ## Installation
-Please use the following command in the NuGet Package Manager Console.
+Please use the following command in the NuGet Package Manager Console to install the library.
 ```
 Install-Package Dazzler
 ```

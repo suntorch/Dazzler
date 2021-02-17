@@ -18,7 +18,7 @@ namespace Dazzler.Test
       {
          ResultInfo ri = new ResultInfo();
 
-         var result = connection.Query<TestRecord>(CommandType.Text, "select 'hello Dazzler!'", ri: ri);
+         var result = connection.Query<TestRecord>(CommandType.Text, "select 'hello Dazzler!' name", ri: ri);
          Assert.AreEqual(1, result.Count, "Invalid output record count.");
          Assert.AreEqual(1, ri.AffectedRows, "Invalid ResultInfo.AffectedRows.");
       }
@@ -44,6 +44,18 @@ namespace Dazzler.Test
          Assert.AreEqual(4, result[1].Age, "Fetched wrong record.");
       }
 
+      [TestMethod]
+      public void SelectQuery_WithParameters()
+      {
+         var args = new
+         {
+            FirstName = "John",
+
+         };
+
+         var result = connection.Query<TestRecord>(CommandType.Text, "select * from MyTable where FirstName = @FirstName");
+         Assert.AreEqual(2, result.Count, "Invalid output record count.");
+      }
 
       #endregion
 

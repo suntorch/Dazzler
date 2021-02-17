@@ -18,7 +18,11 @@ namespace Dazzler
       public static event ExecutingDelegate ExecutingEvent;
       public static event ExecutedDelegate ExecutedEvent;
 
-      public static void OnExecutingEvent(CommandEventArgs args) => ExecutingEvent?.Invoke(args);
+      public static void OnExecutingEvent(CommandEventArgs args)
+      {
+         ExecutingEvent?.Invoke(args);
+         if (args.Cancel) throw new OperationCanceledException();
+      }
       public static void OnExecutedEvent(CommandEventArgs args, ResultInfo result) => ExecutedEvent?.Invoke(args, result);
 
       #endregion
