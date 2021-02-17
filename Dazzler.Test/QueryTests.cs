@@ -49,11 +49,11 @@ namespace Dazzler.Test
       {
          var args = new
          {
-            FirstName = "John",
+            Name = "John",
 
          };
 
-         var result = connection.Query<TestRecord>(CommandType.Text, "select * from MyTable where FirstName = @FirstName");
+         var result = connection.Query<TestRecord>(CommandType.Text, "select * from MyTable where Name = @Name");
          Assert.AreEqual(2, result.Count, "Invalid output record count.");
       }
 
@@ -78,8 +78,8 @@ END";
 
          var args = new
          {
-            Name = "Bill",
-            Age = 99
+            Name = "John",
+            Age = 25
          };
 
          var result = connection.Query<TestRecord>(CommandType.StoredProcedure, "DazzlerProc1", args);

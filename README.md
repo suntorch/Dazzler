@@ -3,29 +3,34 @@
 ## Features
 Dazzler is a NuGet data access library that extends IDbConnection interface.
 
-- :+1: lightweight and high performance. :rocket: 
-- :+1: mapping a query result :scroll: to **`strongly-typed`** object.
-- :+1: 2-way binding :link: a class property to **`input`** and **`output`** parameters.
-- :+1: *
+- lightweight and high performance. :rocket: 
+- mapping a query result :scroll: to **`strongly-typed`** object.
+- 2-way binding :link: a class property to **`input`** and **`output`** parameters.
+- *
 
 
 
 ## Parameterized Query
-A Strongly-Typed, Anonymous and ExpandoObject object can be passed as query parameters
-and a property name should match with query parameter name in order to bind it.
+A **Strongly-Typed**, **Anonymous** and **ExpandoObject** object can be passed as query parameters
+and a property name should match with query parameter name in order to bind it. 
+After a query is executed, Output and Function Return parameter will automatically takes 
+the value that is returned by a query. You don''t have to do any extra operation. :+1:
 
 There are 2 methods to specify a direction of the query parameter.
 
 - **`DirectionAttribute`** attribute class.
-- special **`suffixes`** on the property name.
+- special **`suffixes`** of the property name.
 
 If you use Anonymous class type object, it does not allow any attribute and you will have to use
 **suffixes** in order to specify a direction.
 
-### Property Name Suffixes
-Suffix format is **PropertyName`[__in|out|ret[size]]`**.
 
-Here:
+
+### Property Name Suffixes
+A suffix is a special notation that is specified at the end of the property name
+and it must use the format **PropertyName`[__in|out|ret[size]]`**.
+
+A suffix consists of the following components:
 | Component | Description |
 | --- | --- |
 |`__`| an identifiers of the suffix. (double Low Line '0x5F')
@@ -33,6 +38,7 @@ Here:
 |`out`| specifies as **output** parameter.
 |`inout`| specifies as **input** and **output** parameter.
 |`ret`| specifies as **return** parameter. Used to call database funciton.
+|`size`| specifies as value size of the parameter. For example: `__out50`, `__ret200`, etc.
 
 
 
@@ -93,10 +99,56 @@ Assert.AreEqual(args.value1, args.value2, "Invalid output value.");
 ```
 
 
+## Execute Commands
+You can pass input parameters and fetch records and bring back all output parameter values.
+
+```SQL
+CREATE OR ALTER PROCEDURE MyStoredProcedure
+	@Name varchar(50),
+	@Age int,
+   @Value int
+AS
+BEGIN
+   -- any output parameters.
+   set @Value = 99
+
+   -- any returning query records.
+	select @Name Name, @Age Age
+END
+```
+
+```csharp
+var args = new
+{
+   Name = "John",
+   Age = 25,
+   Value__out = 0
+};
+
+var result = connection.Query<ModelClass>(CommandType.StoredProcedure, "MyStoredProcedure", args);
+Assert.AreEqual(1, result.Count, "Invalid record count.");
+Assert.AreEqual(25, result[0].Age, "Fetched wrong record.");
+Assert.AreEqual(99, args.Value__out, "Invalid output value.");
+```
+
+
+## Paging
+It allows to read a some count of records from given offset position.
+
+```csharp
+string sql = "select Age from ( values (1),(2),(3),(4),(5),(6),(7) ) as tmp (Age)";
+
+var result = connection.Query<ModelClass>(CommandType.Text, sql, offset: 2, limit: 2);
+
+Assert.AreEqual(2, result.Count, "Invalid output record count.");
+Assert.AreEqual(3, result[0].Age, "Fetched wrong record.");
+Assert.AreEqual(4, result[1].Age, "Fetched wrong record.");
+```
 
 
 ## Execution Events
-It has the following **pre** and **post** events that enable to control and monitor any database operations globally.
+Some application needs to monitor, log and control database actions globally without writing an extra code.
+Using the following **pre** and **post** events, it allows to implement such needs.
 
 - ExecutingEvent(CommandEventArgs args)
 - ExecutedEvent(CommandEventArgs args, ResultInfo result)
@@ -104,12 +156,15 @@ It has the following **pre** and **post** events that enable to control and moni
 
 The use cases can be as follows:
 
-- to log all database operations.
-- to accept/cancel database operations in centralized code base.
+- to monitor/report all Update/Delete/Insert operations.
+- to monitor/report top Nth long running queries.
+- to accept/reject a query execution in centralized code base.
+
 
 
 ## DB providers can be used
 It works across all .NET ADO providers including SQL Server, MySQL, Firebird, PostgreSQL and Oracle.
+
 
 
 ## Examples
