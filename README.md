@@ -4,9 +4,13 @@
 Dazzler is a NuGet data access library that extends IDbConnection interface.
 
 :+1: lightweigth and high performance.
+
 :+1: mapping a query result to **strongly-typed** object.
+
 :+1: 2-way binding a class property to **input** and **output* parameters.
-:+1: 
+
+:+1: *
+
 
 
 
