@@ -9,4 +9,23 @@ namespace Dazzler
    /// to the database returning column.
    /// </summary>
    public class IgnoreFetchAttribute : Attribute { }
+
+
+
+   /// <summary>
+   /// 
+   /// </summary>
+   public enum Direction : int { In, Out, InOut, Return }
+
+   /// <summary>
+   /// 
+   /// </summary>
+   public class DirectionAttribute : Attribute
+   {
+      public Direction Direction { get; set; }
+      public DirectionAttribute(Direction direction)
+      {
+         this.Direction = direction;
+      }
+   }
 }
