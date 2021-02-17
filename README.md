@@ -34,11 +34,11 @@ A suffix consists of the following components:
 | Component | Description |
 | --- | --- |
 |`__`| an identifiers of the suffix. (double Low Line '0x5F')
-|`in`| specifies as **input** parameter.
-|`out`| specifies as **output** parameter.
-|`inout`| specifies as **input** and **output** parameter.
-|`ret`| specifies as **return** parameter. Used to call database funciton.
-|`size`| specifies as value size of the parameter. For example: `__out50`, `__ret200`, etc.
+|`in`| specifies **input** parameter.
+|`out`| specifies **output** parameter.
+|`inout`| specifies **input** and **output** parameter.
+|`ret`| specifies **return** parameter. Used to call database function.
+|`size`| specifies a value size of the parameter. For example: `__out50`, `__ret200`, etc.
 
 
 
@@ -101,18 +101,21 @@ Assert.AreEqual(args.value1, args.value2, "Invalid output value.");
 
 ## Execute Commands
 You can pass input parameters and fetch records and bring back all output parameter values.
+There is no big difference to execute a SQL Statement, Stored Procedure and Function, unless
+specifying a command type by **`CommandType`**.
+
 
 ```TSQL
 CREATE OR ALTER PROCEDURE MyStoredProcedure
    @Name varchar(50),
    @Age int,
-   @Value int
+   @Value int OUTPUT
 AS
 BEGIN
    -- any output parameters.
    set @Value = 99
 
-   -- any returning query records.
+   -- any returning records.
    select @Name Name, @Age Age
 END
 ```
@@ -133,16 +136,16 @@ Assert.AreEqual(99, args.Value__out, "Invalid output value.");
 
 
 ## Paging
-It allows to read a some count of records from given offset position.
+It allows to implement a pagination to fetch a some records from the given offset position.
 
 ```C#
-string sql = "select Age from ( values (1),(2),(3),(4),(5),(6),(7) ) as tmp (Age)";
+string sql = "select Value from ( values (1),(2),(3),(4),(5),(6),(7) ) as tmp (Value)";
 
 var result = connection.Query<ModelClass>(CommandType.Text, sql, offset: 2, limit: 2);
 
 Assert.AreEqual(2, result.Count, "Invalid output record count.");
-Assert.AreEqual(3, result[0].Age, "Fetched wrong record.");
-Assert.AreEqual(4, result[1].Age, "Fetched wrong record.");
+Assert.AreEqual(3, result[0].Value, "Fetched wrong record.");
+Assert.AreEqual(4, result[1].Value, "Fetched wrong record.");
 ```
 
 
@@ -168,7 +171,7 @@ It works across all .NET ADO providers including SQL Server, MySQL, Firebird, Po
 
 
 ## Examples
-You can see and learn from the test project [Dazzler.Test](https://github.com/suntorch/dazzler.test).
+You can see :eyes: and learn :green_book: from the test project [Dazzler.Test](https://github.com/suntorch/Dazzler/tree/master/Dazzler.Test)
 
 
 
@@ -177,3 +180,6 @@ Please use the following command in the NuGet Package Manager Console to install
 ```
 Install-Package Dazzler
 ```
+
+Happy coding! 
+
