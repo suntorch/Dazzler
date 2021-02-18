@@ -198,11 +198,6 @@ Assert.AreEqual(99, args.ReturnValue__out, "Invalid return value.");
 ```
 
 
-### Advanced Execution
-
-
-
-
 ## Paging
 It allows to implement a pagination to fetch a some records from the given offset position.
 
