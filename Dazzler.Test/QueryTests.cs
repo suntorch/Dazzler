@@ -113,7 +113,49 @@ END";
 
       #endregion
 
+      #region Implementing Events
 
+      [TestMethod]
+      public void SelectQuery_WithEvent()
+      {
+         Mapper.ExecutingEvent += Mapper_ExecutingEvent;
+         Mapper.ExecutedEvent += Mapper_ExecutedEvent;
+
+         SelectQuery_Basic();
+
+         Mapper.ExecutingEvent -= Mapper_ExecutingEvent;
+         Mapper.ExecutedEvent -= Mapper_ExecutedEvent;
+      }
+
+      private void Mapper_ExecutedEvent(CommandEventArgs args, ResultInfo result)
+      {
+         var param = new
+         {
+            Started = DateTime.Now,
+            Kind = args.Kind,
+            args.Sql,
+            result.Duration,
+            Rows = result.AffectedRows
+         };
+
+         // ATTENTION: Any database operation in this event function should not trigger events!
+         // Otherwise, it will cause recursive call for the event function and it will never end.
+
+         var affectedRows = connection.NonQuery(CommandType.Text
+            , "insert into DBLog (Started,Kind,Sql,Duration,Rows) values (@Started,@Kind,@Sql,@Duration,@Rows)"
+            , param
+            , noevent: true);
+
+         Assert.AreEqual(1, affectedRows, "Invalid inserted log record.");
+
+      }
+
+      private void Mapper_ExecutingEvent(CommandEventArgs args)
+      {
+         Console.WriteLine("Executing {0}: {1}", args.Kind, args.Sql);
+      }
+
+      #endregion
    }
 
 

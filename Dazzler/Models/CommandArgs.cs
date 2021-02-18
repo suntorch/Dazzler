@@ -10,7 +10,7 @@ namespace Dazzler.Models
 
 
       /// <summary>
-      /// Enables or disables an events Executing and Executed.
+      /// Specifies whether to invoke an execution events ExecutingEvent and ExecutedEvent.
       /// </summary>
       public bool? NoEvent { get; set; }
 

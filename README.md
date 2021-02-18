@@ -13,7 +13,7 @@ Dazzler is a NuGet data access library that extends IDbConnection interface.
 A **Strongly-Typed**, **Anonymous** and **ExpandoObject** object can be passed as query parameters
 and a property name should match with query parameter name in order to bind it. 
 After a query is executed, **Output** and **Function Return** parameter will automatically take 
-the value that is returned by a query. You don't have to do any extra operation. :+1:
+the value that is returned by a query. You don't have to do any extra work. :+1:
 
 There are 2 methods to specify a direction of the query parameter.
 
@@ -28,7 +28,7 @@ therefore, you will have to use **suffixes** in order to specify a direction.
 
 ### Property Name Suffixes
 A suffix is a special notation that is specified at the end of the property name
-and it must use the format **PropertyName`[__in|out|ret[size]]`**.
+and it must use the pattern **PropertyName`[__in|out|ret[size]]`**.
 
 A suffix consists of the following components:
 | Component | Description |
@@ -83,7 +83,7 @@ public class ModelClass
 {
    public int value1 { get; set; }
 
-   [Direction(Direction.Output)]
+   [Direction(Direction.Out)]
    public int value2 { get; set; }
 };
 ```
@@ -100,10 +100,41 @@ Assert.AreEqual(args.value1, args.value2, "Invalid output value.");
 
 
 ## Execute Commands
-You can pass input parameters and fetch records and bring back all output parameter values.
-There is no big difference to execute a SQL Statement, Stored Procedure and Function, unless
-specifying a command type by **`CommandType`**.
+There is no big difference to execute a SQL Statement, Stored Procedure and Function, 
+unless specifying a command type by **`CommandType`**. 
 
+
+### Execute SQL Statement
+
+```C#
+
+// assigns the ouput value in SELECT
+string sql = "select @Name Name, @Age Age, @Value=99";
+
+string sql = @"
+BEGIN
+   -- do some business logic.
+   select @Name Name, @Age Age
+
+   -- assigns output values.
+   set @Value = 99
+END";
+
+var args = new
+{
+   Name = "John",
+   Age = 25,
+   Value__out = 0
+};
+
+var result = connection.Query<ModelClass>(CommandType.Text, sql, args);
+Assert.AreEqual(1, result.Count, "Invalid record count.");
+Assert.AreEqual(25, result[0].Age, "Fetched wrong record.");
+Assert.AreEqual(99, args.Value__out, "Invalid output value.");
+```
+
+
+### Execute Database Stored Procedure
 
 ```TSQL
 CREATE OR ALTER PROCEDURE MyStoredProcedure
@@ -134,6 +165,43 @@ Assert.AreEqual(25, result[0].Age, "Fetched wrong record.");
 Assert.AreEqual(99, args.Value__out, "Invalid output value.");
 ```
 
+### Execute Database Function
+
+```TSQL
+CREATE OR ALTER FUNCTION MyFunction(
+   @Name varchar(50),
+   @Age int
+)
+RETURN int
+AS
+BEGIN
+   -- any returning records.
+   select @Name Name, @Age Age
+
+   -- function return.
+   return 99
+END
+```
+
+```C#
+var args = new
+{
+   Name = "John",
+   Age = 25,
+   ReturnValue__ret = 0
+};
+
+var result = connection.Query<ModelClass>(CommandType.StoredProcedure, "MyFunction", args);
+Assert.AreEqual(1, result.Count, "Invalid record count.");
+Assert.AreEqual(25, result[0].Age, "Fetched wrong record.");
+Assert.AreEqual(99, args.ReturnValue__out, "Invalid return value.");
+```
+
+
+### Advanced Execution
+
+
+
 
 ## Paging
 It allows to implement a pagination to fetch a some records from the given offset position.
@@ -159,10 +227,54 @@ Using the following **pre** and **post** events, it allows to implement such nee
 
 The use cases can be as follows:
 
-- to monitor/report all Update/Delete/Insert operations.
+- to monitor/report all database operations.
 - to monitor/report top Nth long running queries.
 - to accept/reject a query execution in centralized code base.
 
+
+### Execution Event Implementation
+
+Let's implement a storing all database operation into the DBLog table.
+
+```C#
+// in program starts
+Mapper.ExecutingEvent += Mapper_ExecutingEvent;
+Mapper.ExecutedEvent += Mapper_ExecutedEvent;
+
+// in program exits
+Mapper.ExecutingEvent -= Mapper_ExecutingEvent;
+Mapper.ExecutedEvent -= Mapper_ExecutedEvent;
+
+// event pre-execution function
+private void Mapper_ExecutingEvent(CommandEventArgs args)
+{
+   // the event function will be invoked when a command is coming to execute.
+   Console.WriteLine("Executing {0}: {1}", args.Kind, args.Sql);
+}
+
+// event post-execution function
+private void Mapper_ExecutedEvent(CommandEventArgs args, ResultInfo result)
+{
+   var param = new
+   {
+      Started = DateTime.Now,
+      Kind = args.Kind,  // no problem with Enum type, it will take a corresponding Int value.
+      args.Sql,
+      result.Duration,
+      Rows = result.AffectedRows
+   };
+
+   // ATTENTION: Any database operation in this event function should not trigger events!
+   // Otherwise, it will cause deadly recursive call for the event function and it will never end.
+
+   var insertedRows = connection.NonQuery(CommandType.Text
+      , "insert into DBLog (Started,Kind,Sql,Duration,Rows) values (@Started,@Kind,@Sql,@Duration,@Rows)"
+      , param
+      , **noevent: true**);
+
+   Assert.AreEqual(1, insertedRows, "Invalid inserted log record.");
+}
+```
 
 
 ## DB providers can be used
