@@ -59,7 +59,7 @@ Assert.AreEqual(args.value1, args.value2__out, "Invalid output value.");
 
 Using Strongly-Typed class type with suffixes:
 ```C#
-public class ModelClass
+public class QueryParameterModel
 {
    public int value1 { get; set; }
    public int value2__out { get; set; }
@@ -67,7 +67,7 @@ public class ModelClass
 ```
 
 ```C#
-ModelClass args = new ModelClass()
+QueryParameterModel args = new QueryParameterModel()
 {
    value1 = 999,
    value2__out = 0
@@ -79,7 +79,7 @@ Assert.AreEqual(args.value1, args.value2__out, "Invalid output value.");
 
 Using Strongly-Typed class type with attribute:
 ```C#
-public class ModelClass
+public class QueryParameterModel
 {
    public int value1 { get; set; }
 
@@ -88,7 +88,7 @@ public class ModelClass
 };
 ```
 ```C#
-ModelClass args = new ModelClass()
+QueryParameterModel args = new QueryParameterModel()
 {
    value1 = 999,
    value2 = 0
@@ -159,7 +159,7 @@ var args = new
    Value__out = 0
 };
 
-var result = connection.Query<ModelClass>(CommandType.StoredProcedure, "MyStoredProcedure", args);
+var result = connection.Query<ResultModel>(CommandType.StoredProcedure, "MyStoredProcedure", args);
 Assert.AreEqual(1, result.Count, "Invalid record count.");
 Assert.AreEqual(25, result[0].Age, "Fetched wrong record.");
 Assert.AreEqual(99, args.Value__out, "Invalid output value.");
@@ -191,7 +191,7 @@ var args = new
    ReturnValue__ret = 0
 };
 
-var result = connection.Query<ModelClass>(CommandType.StoredProcedure, "MyFunction", args);
+var result = connection.Query<ResultModel>(CommandType.StoredProcedure, "MyFunction", args);
 Assert.AreEqual(1, result.Count, "Invalid record count.");
 Assert.AreEqual(25, result[0].Age, "Fetched wrong record.");
 Assert.AreEqual(99, args.ReturnValue__out, "Invalid return value.");
@@ -204,7 +204,7 @@ It allows to implement a pagination to fetch a some records from the given offse
 ```C#
 string sql = "select Value from ( values (1),(2),(3),(4),(5),(6),(7) ) as tmp (Value)";
 
-var result = connection.Query<ModelClass>(CommandType.Text, sql, offset: 2, limit: 2);
+var result = connection.Query<ResultModel>(CommandType.Text, sql, offset: 2, limit: 2);
 
 Assert.AreEqual(2, result.Count, "Invalid output record count.");
 Assert.AreEqual(3, result[0].Value, "Fetched wrong record.");
