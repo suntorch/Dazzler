@@ -230,10 +230,10 @@ The use cases can be as follows:
 ### Execution Event Implementation
 
 Let's implement a storing all database operation into the DBLog table.
-If you are executing any database operation from the event method
-please be aware the execution must not trigger an events. Set **`noevent=true`**.
-Otherwise, it will cause deadly recursive call for the event method and it will never end.
-
+Please be aware of when we execute any database operation from the event 
+method, the execution must not trigger an events. Otherwise, it will 
+cause deadly recursive call for the event method and it will never end.
+Set **`noevent=true`**
 
 ```C#
 // in program starts
@@ -244,14 +244,14 @@ Mapper.ExecutedEvent += Mapper_ExecutedEvent;
 Mapper.ExecutingEvent -= Mapper_ExecutingEvent;
 Mapper.ExecutedEvent -= Mapper_ExecutedEvent;
 
-// event pre-execution function
+// event pre-execution method
 private void Mapper_ExecutingEvent(CommandEventArgs args)
 {
    // the event function will be invoked when a command is coming to execute.
    Console.WriteLine("Executing {0}: {1}", args.Kind, args.Sql);
 }
 
-// event post-execution function
+// event post-execution method
 private void Mapper_ExecutedEvent(CommandEventArgs args, ResultInfo result)
 {
    var param = new
