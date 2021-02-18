@@ -7,9 +7,10 @@
     <Description>A high performance and light weight Micro-ORM supporting SQL Server, MySQL, Firebird, PostgreSQL and Oracle.</Description>
     <Version>1.2.0</Version>
     <PackageTags>sql;query;orm;micro-orm;dotnet-orm</PackageTags>
-    <PackageId>Dazzler</PackageId>
+    <PackageId>SunTorch.Dazzler</PackageId>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/suntorch/Dazzler</RepositoryUrl>
+    <Copyright>Amarsanaa Amgalan</Copyright>
   </PropertyGroup>
 
 </Project>
