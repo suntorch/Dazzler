@@ -4,9 +4,8 @@ using System.Data.Common;
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using System.Reflection;
-using System.Linq;
 using System.Dynamic;
+using System.Linq;
 using Dazzler.Models;
 using Dazzler.Interfaces;
 using Dazzler.Handlers;
@@ -129,7 +128,7 @@ namespace Dazzler
          typeHandler.SetValue(parameter, value, type);
       }
 
-      private static void BuildDatabaseParameters(IDbCommand command, dynamic parameterObject, out ParameterLookup lookup)
+      private static void BuildDatabaseParameters(IDbCommand command, object parameterObject, out ParameterLookup lookup)
       {
          lookup = null;
          if (parameterObject == null) return;
@@ -176,7 +175,7 @@ namespace Dazzler
          // return for next operation.
          lookup = opl;
       }
-      private static void ReadOutputParameters(IDbCommand command, dynamic parameterObject, ParameterLookup lookup)
+      private static void ReadOutputParameters(IDbCommand command, object parameterObject, ParameterLookup lookup)
       {
          if (parameterObject == null) return;
 
@@ -246,7 +245,7 @@ namespace Dazzler
       /// <returns></returns>
       private static int ExecuteNonQueryImpl(this IDbConnection conn, CommandArgs args, ResultInfo ri)
       {
-         return ExecuteImpl<int>(conn, args, ri, (command, args, lookup) =>
+         return ExecuteImpl<int>(conn, args, ri, (command, data, lookup) =>
          {
             List<int> result = new List<int>();
             result.Add(command.ExecuteNonQuery());
@@ -264,7 +263,7 @@ namespace Dazzler
       /// <returns></returns>
       private static T ExecuteScalarImpl<T>(this IDbConnection conn, CommandArgs args, ResultInfo ri)
       {
-         return ExecuteImpl<T>(conn, args, ri, (command, args, lookup) =>
+         return ExecuteImpl<T>(conn, args, ri, (command, data, lookup) =>
          {
             List<T> result = new List<T>();
             result.Add((T)new ValueTypeHandler().Parse(command.ExecuteScalar(), typeof(T)));
@@ -283,7 +282,7 @@ namespace Dazzler
       /// <returns></returns>
       private static List<T> ExecuteImpl<T>(this IDbConnection conn, CommandArgs args, ResultInfo ri, QueryGenericReader<T> reader)
       {
-         return ExecuteImpl<T>(conn, args, ri, (command, args, lookup) => reader?.Read(command, args));
+         return ExecuteImpl<T>(conn, args, ri, (command, data, lookup) => reader?.Read(command, data));
       }
 
 
