@@ -18,7 +18,7 @@ namespace Dazzler.Test
       {
          ResultInfo ri = new ResultInfo();
 
-         var result = connection.Query<TestRecord>(CommandType.Text, "select 'hello Dazzler!' name", ri: ri);
+         var result = connection.Query<ResultModel>(CommandType.Text, "select 'hello Dazzler!' name", ri: ri);
          Assert.AreEqual(1, result.Count, "Invalid output record count.");
          Assert.AreEqual(1, ri.AffectedRows, "Invalid ResultInfo.AffectedRows.");
       }
@@ -27,7 +27,7 @@ namespace Dazzler.Test
       [TestMethod]
       public void SelectQuery_MultiRows()
       {
-         var result = connection.Query<TestRecord>(CommandType.Text, "select 'John' Name union all select 'Doe'");
+         var result = connection.Query<ResultModel>(CommandType.Text, "select 'John' Name union all select 'Doe'");
          Assert.AreEqual(2, result.Count, "Invalid output record count.");
       }
 
@@ -37,7 +37,7 @@ namespace Dazzler.Test
       {
          string sql = "select Age from ( values (1),(2),(3),(4),(5),(6),(7) ) as tmp (Age)";
 
-         var result = connection.Query<TestRecord>(CommandType.Text, sql, offset: 2, limit: 2);
+         var result = connection.Query<ResultModel>(CommandType.Text, sql, offset: 2, limit: 2);
 
          Assert.AreEqual(2, result.Count, "Invalid output record count.");
          Assert.AreEqual(3, result[0].Age, "Fetched wrong record.");
@@ -49,11 +49,12 @@ namespace Dazzler.Test
       {
          var args = new
          {
-            Name = "John",
-
+            Name = "John"
          };
 
-         var result = connection.Query<TestRecord>(CommandType.Text, "select * from MyTable where Name = @Name");
+         string sql = "select Name from ( values ('John'),('Bob'),('Mary'),('John'),('Lucy') ) as tmp (Name) where Name = @Name";
+
+         var result = connection.Query<ResultModel>(CommandType.Text, sql, args);
          Assert.AreEqual(2, result.Count, "Invalid output record count.");
       }
 
@@ -61,8 +62,8 @@ namespace Dazzler.Test
 
       #region Stored Procedure tests
 
-      string create_proc1 = @"
-CREATE OR ALTER PROCEDURE DazzlerProc1
+      const string create_proc1 = @"
+CREATE OR ALTER PROCEDURE Dazzler_SP1
 	@Name varchar(50),
 	@Age int
 AS
@@ -82,14 +83,14 @@ END";
             Age = 25
          };
 
-         var result = connection.Query<TestRecord>(CommandType.StoredProcedure, "DazzlerProc1", args);
+         var result = connection.Query<ResultModel>(CommandType.StoredProcedure, "Dazzler_SP1", args);
          Assert.AreEqual(1, result.Count, "Invalid output record count.");
-         Assert.AreEqual(99, result[0].Age, "Fetched wrong record.");
+         Assert.AreEqual(args.Age, result[0].Age, "Fetched wrong record.");
 
       }
 
-      string create_proc2 = @"
-CREATE OR ALTER PROCEDURE DazzlerProc2
+      const string create_proc2 = @"
+CREATE OR ALTER PROCEDURE Dazzler_SP2
 AS BEGIN
   -- If RAISEERROR is done before the SELECT, an exception will be received in C#
   --RAISERROR('before select', 16, 1);
@@ -107,7 +108,7 @@ END";
          // create a test stored procedure.
          connection.NonQuery(CommandType.Text, create_proc2);
 
-         var result = connection.Query<TestRecord>(CommandType.StoredProcedure, "DazzlerProc2", null);
+         var result = connection.Query<ResultModel>(CommandType.StoredProcedure, "Dazzler_SP2", null);
          Assert.AreEqual(2, result.Count, "Invalid output record count.");
       }
 
@@ -115,9 +116,24 @@ END";
 
       #region Implementing Events
 
+      const string create_table1 = @"
+CREATE TABLE ##DBLog
+(
+   Started datetime,
+   Kind int,
+   Sql varchar(4000),
+   Duration int,
+   Rows int
+);";
+
+
       [TestMethod]
       public void SelectQuery_WithEvent()
       {
+         // create temp table at first.
+         connection.NonQuery(CommandType.Text, create_table1);
+
+
          Mapper.ExecutingEvent += Mapper_ExecutingEvent;
          Mapper.ExecutedEvent += Mapper_ExecutedEvent;
 
@@ -142,7 +158,7 @@ END";
          // Otherwise, it will cause recursive call for the event function and it will never end.
 
          var affectedRows = connection.NonQuery(CommandType.Text
-            , "insert into DBLog (Started,Kind,Sql,Duration,Rows) values (@Started,@Kind,@Sql,@Duration,@Rows)"
+            , "insert into ##DBLog (Started,Kind,Sql,Duration,Rows) values (@Started,@Kind,@Sql,@Duration,@Rows)"
             , param
             , noevent: true);
 
@@ -160,13 +176,12 @@ END";
 
 
    #region model classes
-   public class TestRecord
+   public class ResultModel
    {
       public string Name { get; set; }
       public int Age { get; set; }
       public DateTime Dob { get; set; }
       public decimal Money { get; set; }
    }
-
    #endregion
 }
