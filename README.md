@@ -127,7 +127,7 @@ var args = new
    Value__out = 0
 };
 
-var result = connection.Query<ModelClass>(CommandType.Text, sql, args);
+var result = connection.Query<ResultModel>(CommandType.Text, sql, args);
 Assert.AreEqual(1, result.Count, "Invalid record count.");
 Assert.AreEqual(25, result[0].Age, "Fetched wrong record.");
 Assert.AreEqual(99, args.Value__out, "Invalid output value.");
@@ -230,6 +230,10 @@ The use cases can be as follows:
 ### Execution Event Implementation
 
 Let's implement a storing all database operation into the DBLog table.
+If you are executing any database operation from the event method
+please be aware the execution must not trigger an events. Set **`noevent=true`**.
+Otherwise, it will cause deadly recursive call for the event method and it will never end.
+
 
 ```C#
 // in program starts
@@ -265,7 +269,7 @@ private void Mapper_ExecutedEvent(CommandEventArgs args, ResultInfo result)
    var insertedRows = connection.NonQuery(CommandType.Text
       , "insert into DBLog (Started,Kind,Sql,Duration,Rows) values (@Started,@Kind,@Sql,@Duration,@Rows)"
       , param
-      , **noevent: true**);
+      , noevent: true);
 
    Assert.AreEqual(1, insertedRows, "Invalid inserted log record.");
 }
