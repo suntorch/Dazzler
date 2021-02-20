@@ -83,7 +83,7 @@ public class QueryParameterModel
 {
    public int value1 { get; set; }
 
-   [Direction(Direction.Out)]
+   [Bind(ParameterDirection.Output)]
    public int value2 { get; set; }
 };
 ```
@@ -96,6 +96,31 @@ QueryParameterModel args = new QueryParameterModel()
 
 var result = connection.NonQuery(CommandType.Text, $"set @value2=@value1", args);
 Assert.AreEqual(args.value1, args.value2, "Invalid output value.");
+```
+
+### Supported Value Types
+It supports all Value-Type types, Enum, Guid and its nullable form.
+
+```C#
+var args = new
+{
+   intValue = 1,
+   decimalValue = 99.99,
+   stringValue = "Hello Dazzler",
+   dateValue = DateTime.Now,
+   guidValue = Guid.NewGuid(),
+   enumValue = Level.High  // it will get underlying value type of the Enum.
+};
+```
+```C#
+var args = new
+{
+   intValue = (int?)null,
+   decimalValue = (decimal?)null,
+   stringValue = null, // string is naturally nullable.
+   dateValue = (DateTime?)null,
+   guidValue = (Guid?)null
+};
 ```
 
 
@@ -289,7 +314,7 @@ You can see :eyes: and learn :green_book: from the test project [Dazzler.Test](h
 ## Installation
 Please use the following command in the NuGet Package Manager Console to install the library.
 ```
-Install-Package SunTorch.Dazzler -Version 1.2.1
+Install-Package SunTorch.Dazzler -Version 1.2.2
 ```
 
 Happy coding! 

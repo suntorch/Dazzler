@@ -107,7 +107,7 @@ END";
       {
          // create a test stored procedure.
          connection.NonQuery(CommandType.Text, create_proc2);
-
+         
          var result = connection.Query<QueryTestResult>(CommandType.StoredProcedure, "Dazzler_SP2", null);
          Assert.AreEqual(2, result.Count, "Invalid output record count.");
       }

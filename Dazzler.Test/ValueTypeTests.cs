@@ -82,12 +82,12 @@ namespace Dazzler.Test
       {
          var args = new QueryParameterModel()
          {
-            Value1 = "hello Dazzler",
-            Value2 = ""
+            value1 = "hello Dazzler",
+            value2 = ""
          };
 
          var result = connection.NonQuery(CommandType.Text, $"set @value2=@value1", args);
-         Assert.AreEqual(args.Value1, args.Value2, "Invalid output value.");
+         Assert.AreEqual(args.value1, args.value2, "Invalid output value.");
       }
       #endregion
 

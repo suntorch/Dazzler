@@ -26,12 +26,12 @@ namespace Dazzler.Test
       /// <summary>
       ///  input parameter.
       /// </summary>
-      public string Value1 { get; set; }
+      public string value1 { get; set; }
 
       /// <summary>
       /// output parameter.
       /// </summary>
       [Bind(ParameterDirection.Output)]
-      public string Value2 { get; set; }
+      public string value2 { get; set; }
    }
 }
