@@ -36,12 +36,12 @@ This attribute is used to specify a query parameter information.
    public class QueryParameterModel
    {
       /// <summary>
-      ///  Without BindAttribute the property will be bound as **input** parameter.
+      ///  Without BindAttribute the property will be bound as input parameter.
       /// </summary>
       public string value1 { get; set; }
 
       /// <summary>
-      /// The BindAttribute specifies that the property will be bound as **output** parameter.
+      /// The BindAttribute specifies that the property will be bound as output parameter.
       /// </summary>
       [Bind(ParameterDirection.Output, 200)]
       public string value2 { get; set; }
@@ -122,7 +122,7 @@ Assert.AreEqual(args.value1, args.value2, "Invalid output value.");
 ```
 
 ### Supported Value Types
-It supports all Value-Type types, Enum, Guid and its nullable form.
+It supports all Value-Type types, Enum, Guid, Array and its nullable form.
 
 ```C#
 var args = new
@@ -132,7 +132,8 @@ var args = new
    stringValue = "Hello Dazzler",
    dateValue = DateTime.Now,
    guidValue = Guid.NewGuid(),
-   enumValue = Level.High  // it will get underlying value type of the Enum.
+   enumValue = Level.High,       // it will get underlying value type of the Enum.
+   imageData = new byte[1000]    // used for VarBinary
 };
 ```
 ```C#
@@ -140,9 +141,11 @@ var args = new
 {
    intValue = (int?)null,
    decimalValue = (decimal?)null,
-   stringValue = null, // string is naturally nullable.
+   stringValue = null,           // string is naturally nullable.
    dateValue = (DateTime?)null,
-   guidValue = (Guid?)null
+   guidValue = (Guid?)null,
+   enumValue = (Level?)null,
+   imageData = (byte[]?)null
 };
 ```
 
