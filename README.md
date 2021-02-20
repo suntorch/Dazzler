@@ -127,9 +127,9 @@ It supports all Value-Type types, Enum, Guid, Array and its nullable form.
 ```C#
 var args = new
 {
+   stringValue = "Hello Dazzler",
    intValue = 1,
    decimalValue = 99.99,
-   stringValue = "Hello Dazzler",
    dateValue = DateTime.Now,
    guidValue = Guid.NewGuid(),
    enumValue = Level.High,       // it will get underlying value type of the Enum.
@@ -139,9 +139,9 @@ var args = new
 ```C#
 var args = new
 {
+   stringValue = null,           // string is naturally nullable.
    intValue = (int?)null,
    decimalValue = (decimal?)null,
-   stringValue = null,           // string is naturally nullable.
    dateValue = (DateTime?)null,
    guidValue = (Guid?)null,
    enumValue = (Level?)null,
@@ -267,15 +267,15 @@ Assert.AreEqual(4, result[1].Value, "Fetched wrong record.");
 Some application needs to monitor, log and control database actions globally without writing an extra code.
 Using the following **pre** and **post** events, it allows to implement such needs.
 
-- ExecutingEvent(CommandEventArgs args)
-- ExecutedEvent(CommandEventArgs args, ResultInfo result)
+-  :zap: ExecutingEvent(CommandEventArgs args)
+-  :zap: ExecutedEvent(CommandEventArgs args, ResultInfo result)
 
 
 The use cases can be as follows:
 
-- to monitor/report all database operations.
-- to monitor/report top Nth long running queries.
-- to accept/reject a query execution in centralized code base.
+-  :speech_balloon: to monitor/report all database operations.
+-  :speech_balloon: to monitor/report top Nth long running queries.
+-  :speech_balloon: to accept/reject a query execution in centralized code base.
 
 
 ### Execution Event Implementation
