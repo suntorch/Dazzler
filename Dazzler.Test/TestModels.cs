@@ -31,7 +31,7 @@ namespace Dazzler.Test
       /// <summary>
       /// output parameter.
       /// </summary>
-      [Bind(ParameterDirection.Output)]
+      [Bind(ParameterDirection.Output, 200)]
       public string value2 { get; set; }
    }
 }

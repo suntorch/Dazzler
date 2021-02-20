@@ -17,13 +17,36 @@ the value that is returned by a query. You don't have to do any extra work. :+1:
 
 There are 2 methods to specify a direction of the query parameter.
 
-- **`DirectionAttribute`** attribute class.
+- **`BindAttribute`** attribute class.
 - special **`suffixes`** for the property name.
 
 For the **strongly-typed** class type, both methods can be used.
 But, Anonymous class type does not allow any attribute implementation, 
 therefore, you will have to use **suffixes** in order to specify a direction.
 
+Implementing both methods together in the **strongly-typed** class type is not recommended.
+If both methods are specified together then only the BindAttribute will be used and 
+Property Name Suffixes will be ignored.
+
+
+### BindAttribute
+This attribute is used to specify a query parameter information.
+
+```C#
+   public class QueryParameterModel
+   {
+      /// <summary>
+      ///  Without BindAttribute the property will be bound as **input** parameter.
+      /// </summary>
+      public string value1 { get; set; }
+
+      /// <summary>
+      /// The BindAttribute specifies that the property will be bound as **output** parameter.
+      /// </summary>
+      [Bind(ParameterDirection.Output, 200)]
+      public string value2 { get; set; }
+   }
+```
 
 
 ### Property Name Suffixes
