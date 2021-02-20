@@ -18,7 +18,7 @@ namespace Dazzler.Test
       {
          ResultInfo ri = new ResultInfo();
 
-         var result = connection.Query<ResultModel>(CommandType.Text, "select 'hello Dazzler!' name", ri: ri);
+         var result = connection.Query<QueryTestResult>(CommandType.Text, "select 'hello Dazzler!' name", ri: ri);
          Assert.AreEqual(1, result.Count, "Invalid output record count.");
          Assert.AreEqual(1, ri.AffectedRows, "Invalid ResultInfo.AffectedRows.");
       }
@@ -27,7 +27,7 @@ namespace Dazzler.Test
       [TestMethod]
       public void SelectQuery_MultiRows()
       {
-         var result = connection.Query<ResultModel>(CommandType.Text, "select 'John' Name union all select 'Doe'");
+         var result = connection.Query<QueryTestResult>(CommandType.Text, "select 'John' Name union all select 'Doe'");
          Assert.AreEqual(2, result.Count, "Invalid output record count.");
       }
 
@@ -37,7 +37,7 @@ namespace Dazzler.Test
       {
          string sql = "select Age from ( values (1),(2),(3),(4),(5),(6),(7) ) as tmp (Age)";
 
-         var result = connection.Query<ResultModel>(CommandType.Text, sql, offset: 2, limit: 2);
+         var result = connection.Query<QueryTestResult>(CommandType.Text, sql, offset: 2, limit: 2);
 
          Assert.AreEqual(2, result.Count, "Invalid output record count.");
          Assert.AreEqual(3, result[0].Age, "Fetched wrong record.");
@@ -54,7 +54,7 @@ namespace Dazzler.Test
 
          string sql = "select Name from ( values ('John'),('Bob'),('Mary'),('John'),('Lucy') ) as tmp (Name) where Name = @Name";
 
-         var result = connection.Query<ResultModel>(CommandType.Text, sql, args);
+         var result = connection.Query<QueryTestResult>(CommandType.Text, sql, args);
          Assert.AreEqual(2, result.Count, "Invalid output record count.");
       }
 
@@ -83,7 +83,7 @@ END";
             Age = 25
          };
 
-         var result = connection.Query<ResultModel>(CommandType.StoredProcedure, "Dazzler_SP1", args);
+         var result = connection.Query<QueryTestResult>(CommandType.StoredProcedure, "Dazzler_SP1", args);
          Assert.AreEqual(1, result.Count, "Invalid output record count.");
          Assert.AreEqual(args.Age, result[0].Age, "Fetched wrong record.");
 
@@ -108,7 +108,7 @@ END";
          // create a test stored procedure.
          connection.NonQuery(CommandType.Text, create_proc2);
 
-         var result = connection.Query<ResultModel>(CommandType.StoredProcedure, "Dazzler_SP2", null);
+         var result = connection.Query<QueryTestResult>(CommandType.StoredProcedure, "Dazzler_SP2", null);
          Assert.AreEqual(2, result.Count, "Invalid output record count.");
       }
 
@@ -173,15 +173,4 @@ CREATE TABLE ##DBLog
 
       #endregion
    }
-
-
-   #region model classes
-   public class ResultModel
-   {
-      public string Name { get; set; }
-      public int Age { get; set; }
-      public DateTime Dob { get; set; }
-      public decimal Money { get; set; }
-   }
-   #endregion
 }

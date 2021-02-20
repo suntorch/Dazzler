@@ -15,7 +15,7 @@ namespace Dazzler.Handlers
    {
       public Type DesiredType { get; } = typeof(Dictionary<string, object>);
 
-      public void ForEach(object parameterObject, Action<string, object, Type> action)
+      public void ForEach(object parameterObject, Action<string, object, Type, BindAttribute> action)
       {
          if (parameterObject == null || action == null) return;
          if (parameterObject.GetType() != DesiredType ) throw new ArgumentException();
@@ -24,7 +24,7 @@ namespace Dazzler.Handlers
          foreach (string key in map.Keys)
          {
             object value = map[key];
-            action?.Invoke(key, value, value?.GetType() ?? typeof(string));
+            action?.Invoke(key, value, value?.GetType() ?? typeof(string), null);
          }
       }
 

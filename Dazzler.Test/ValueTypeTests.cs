@@ -21,7 +21,7 @@ namespace Dazzler.Test
 
          string value = "hello Dazzler!";
 
-         var result = connection.Query<SelectResultObject>(CommandType.Text, $"select '{value}' String", ri: ri);
+         var result = connection.Query<ValueTestResult>(CommandType.Text, $"select '{value}' String", ri: ri);
          Assert.AreEqual(1, result.Count, "Invalid row.");
          Assert.AreEqual(value, result.FirstOrDefault()?.String, "Invalid value.");
       }
@@ -31,7 +31,7 @@ namespace Dazzler.Test
       {
          DateTime value = new DateTime(2021, 12, 31, 23, 59, 59);
 
-         var result = connection.Query<SelectResultObject>(CommandType.Text, $"select '{value}' DateTime", null);
+         var result = connection.Query<ValueTestResult>(CommandType.Text, $"select '{value}' DateTime", null);
          Assert.AreEqual(1, result.Count, "Invalid row.");
          Assert.AreEqual(value, result.FirstOrDefault()?.DateTime, "Invalid value.");
       }
@@ -41,7 +41,7 @@ namespace Dazzler.Test
       {
          int value = int.MaxValue;
 
-         var result = connection.Query<SelectResultObject>(CommandType.Text, $"select {value} Integer", null);
+         var result = connection.Query<ValueTestResult>(CommandType.Text, $"select {value} Integer", null);
          Assert.AreEqual(1, result.Count, "Invalid row.");
          Assert.AreEqual(value, result.FirstOrDefault()?.Integer, "Invalid value.");
       }
@@ -51,7 +51,7 @@ namespace Dazzler.Test
       {
          decimal value = 987654321.12345M;
 
-         var result = connection.Query<SelectResultObject>(CommandType.Text, $"select {value} Decimal", null);
+         var result = connection.Query<ValueTestResult>(CommandType.Text, $"select {value} Decimal", null);
          Assert.AreEqual(1, result.Count, "Invalid row.");
          Assert.AreEqual(value, result.FirstOrDefault()?.Decimal, "Invalid value.");
       }
@@ -61,7 +61,7 @@ namespace Dazzler.Test
       {
          double value = 123456789.987654D;
 
-         var result = connection.Query<SelectResultObject>(CommandType.Text, $"select {value} [Double]", null);
+         var result = connection.Query<ValueTestResult>(CommandType.Text, $"select {value} [Double]", null);
          Assert.AreEqual(1, result.Count, "Invalid row.");
          Assert.AreEqual(value, result.FirstOrDefault()?.Double, "Invalid value.");
       }
@@ -69,11 +69,26 @@ namespace Dazzler.Test
       [TestMethod]
       public void QueryGuidValue()
       {
-         var result = connection.Query<SelectResultObject>(CommandType.Text, $"select NEWID() Guid", null);
+         var result = connection.Query<ValueTestResult>(CommandType.Text, $"select NEWID() Guid", null);
          Assert.AreEqual(1, result.Count, "Invalid row.");
          Assert.AreNotEqual(Guid.Empty, result.FirstOrDefault()?.Guid, "Invalid value.");
       }
 
+      #endregion
+
+      #region non-query strongly-typed input test
+      [TestMethod]
+      public void OutValueString_strong_typed()
+      {
+         var args = new QueryParameterModel()
+         {
+            Value1 = "hello Dazzler",
+            Value2 = ""
+         };
+
+         var result = connection.NonQuery(CommandType.Text, $"set @value2=@value1", args);
+         Assert.AreEqual(args.Value1, args.Value2, "Invalid output value.");
+      }
       #endregion
 
       #region non-query output parameter tests
@@ -169,7 +184,7 @@ namespace Dazzler.Test
             value2__out = ""
          };
 
-         var result = connection.Query<SelectResultObject>(CommandType.Text, $"set @value2=@value1  select @value1 String ", args);
+         var result = connection.Query<ValueTestResult>(CommandType.Text, $"set @value2=@value1  select @value1 String ", args);
          Assert.AreEqual(1, result.Count, "Invalid row.");
          Assert.AreEqual(args.value1, result.FirstOrDefault().String, "Invalid output resultset.");
          Assert.AreEqual(args.value1, args.value2__out, "Invalid output parameter value.");
@@ -177,17 +192,4 @@ namespace Dazzler.Test
 
       #endregion
    }
-
-
-   #region model classes
-   public class SelectResultObject
-   {
-      public string String { get; set; }
-      public int Integer { get; set; }
-      public DateTime DateTime { get; set; }
-      public decimal Decimal { get; set; }
-      public double Double { get; set; }
-      public Guid Guid { get; set; }
-   }
-   #endregion
 }

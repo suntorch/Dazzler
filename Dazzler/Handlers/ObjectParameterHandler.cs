@@ -14,7 +14,7 @@ namespace Dazzler.Handlers
    {
       public Type DesiredType { get; } = typeof(object);
 
-      public void ForEach(object parameterObject, Action<string, object, Type> action)
+      public void ForEach(object parameterObject, Action<string, object, Type, BindAttribute> action)
       {
          if (parameterObject == null || action == null) return;
 
@@ -24,7 +24,9 @@ namespace Dazzler.Handlers
             // exception if member implemented IgnoreFetch attribute.
             if (pi.GetCustomAttribute<IgnoreFetchAttribute>(false) != null) continue; // skip
 
-            action?.Invoke(pi.Name, pi.GetValue(parameterObject), pi.PropertyType);
+            var attrParam = pi.GetCustomAttribute<BindAttribute>(false);
+
+            action?.Invoke(pi.Name, pi.GetValue(parameterObject), pi.PropertyType, attrParam);
          }
       }
 

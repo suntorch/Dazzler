@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Text;
 
 namespace Dazzler
@@ -12,22 +13,28 @@ namespace Dazzler
 
 
 
-   /// <summary>
-   /// 
-   /// </summary>
-   public enum Direction : int { In, Out, InOut, Return }
-
-
 
    /// <summary>
    /// 
    /// </summary>
-   public class DirectionAttribute : Attribute
+   public class BindAttribute : Attribute
    {
-      public Direction Direction { get; set; }
-      public DirectionAttribute(Direction direction)
+      public ParameterDirection Direction { get; set; }
+      public int Size { get; set; }
+
+      public BindAttribute(ParameterDirection direction)
       {
          this.Direction = direction;
       }
+      public BindAttribute(ParameterDirection direction, int size)
+      {
+         this.Direction = direction;
+         this.Size = size;
+      }
+      public BindAttribute(int size)
+      {
+         this.Size = size;
+      }
+
    }
 }

@@ -19,11 +19,11 @@ namespace Dazzler.Interfaces
       /// </summary>
       /// <param name="parameterObject">Parameter object such as Persistant or Anonymous class object or Dictionary etc.</param>
       /// <param name="action">The action method to work for each parameter value to set IDbParameter.</param>
-      void ForEach(object parameterObject, Action<string, object, Type> action);
+      void ForEach(object parameterObject, Action<string, object, Type, BindAttribute> action);
 
-     
+
       /// <summary>
-      /// 
+      /// Implement this interface to set a value to class property.
       /// </summary>
       /// <param name="parameterObject"></param>
       /// <param name="name"></param>

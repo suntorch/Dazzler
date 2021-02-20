@@ -104,15 +104,29 @@ namespace Dazzler
       /// <param name="name"></param>
       /// <param name="value"></param>
       /// <param name="type"></param>
-      private static void AssignParameter(IDbDataParameter parameter, string name, object value, Type type, out ITypeHandler typeHandler)
+      private static void AssignParameter(IDbDataParameter parameter, string name, object value, Type type, BindAttribute attr, out ITypeHandler typeHandler)
       {
-         // extracts a suffix if it has.
-         ParsePropertyName(name, out string actualName, out ParameterDirection direction, out int size);
+         ParameterDirection direction = ParameterDirection.Input;
+         string actualName = name;
+         int size = 0;
 
-         // general.
+         // if attribute is specified it ignores suffixes!
+         if (attr != null)
+         {
+            direction = attr.Direction;
+            size = attr.Size;
+         }
+         else
+         {
+            // extracts a suffix if it has.
+            ParsePropertyName(name, out actualName, out direction, out size);
+         }
+
+         // assigns parameter values.
          parameter.ParameterName = $"{_prefix}{actualName}";
          parameter.Direction = direction;
          parameter.Size = size;
+
 
          // rethink the size for output string parameter!
          if (direction != ParameterDirection.Input && size == 0 && type == typeof(string)) parameter.Size = 8000;
@@ -154,10 +168,15 @@ namespace Dazzler
          };
 
          // declares action method to handle parameter. It will be called for each member.
-         Action<string, object, Type> action = delegate (string propertyName, object propertyValue, Type propertyType)
+         Action<string, object, Type, BindAttribute> action = delegate (string propertyName, object propertyValue, Type propertyType, BindAttribute attr)
          {
+            // creates parameter object.
             IDbDataParameter p = command.CreateParameter();
-            AssignParameter(p, propertyName, propertyValue, propertyType, out ITypeHandler typeHandler);
+            
+            // assigns parameter input value with parsing suffixes.
+            AssignParameter(p, propertyName, propertyValue, propertyType, attr, out ITypeHandler typeHandler);
+
+            // adds database parameter.
             command.Parameters.Add(p);
 
             // save information to assign output parameter values.
