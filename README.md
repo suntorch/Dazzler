@@ -122,7 +122,7 @@ Assert.AreEqual(args.value1, args.value2, "Invalid output value.");
 ```
 
 ### Supported Value Types
-It supports all Value-Type types, Enum, Guid, Array and its nullable form.
+It supports all Value-Type types, Enum, Guid, Array, and its nullable form.
 
 ```C#
 var args = new
@@ -340,7 +340,7 @@ You can see :eyes: and learn :green_book: from the test project [Dazzler.Test](h
 ## Installation
 Please use the following command in the NuGet Package Manager Console to install the library.
 ```
-Install-Package SunTorch.Dazzler -Version 1.2.2
+Install-Package SunTorch.Dazzler -Version 1.2.3
 ```
 
 Happy coding! 
