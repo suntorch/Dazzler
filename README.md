@@ -280,13 +280,7 @@ The use cases can be as follows:
 -  :speech_balloon: to accept/reject a query execution in centralized code base.
 
 
-### Execution Event Implementation
-
-Let's implement a storing all database operation into the DBLog table.
-Please be aware of when we execute any database operation from the event 
-method, the execution must not trigger an events. Otherwise, it will 
-cause deadly recursive call for the event method and it will never end.
-Set **`noevent=true`**
+### Event Declaration
 
 ```C#
 // in program starts
@@ -297,14 +291,34 @@ Mapper.ExecutedEvent += Mapper_ExecutedEvent;
 Mapper.ExecutingEvent -= Mapper_ExecutingEvent;
 Mapper.ExecutedEvent -= Mapper_ExecutedEvent;
 
-// event pre-execution method
+
+// pre-execution event method
 private void Mapper_ExecutingEvent(CommandEventArgs args)
 {
-   // the event function will be invoked when a command is coming to execute.
-   Console.WriteLine("Executing {0}: {1}", args.Kind, args.Sql);
+  ...
 }
 
-// event post-execution method
+// post-execution event method
+private void Mapper_ExecutedEvent(CommandEventArgs args, ResultInfo result)
+{
+  ...
+}
+```
+
+
+### Event Implementation - Example #1. To record a log.
+
+Let's implement a storing all database operation into the DBLog table,
+after execution completes.
+Please be aware of when we execute any database operation from the event 
+method, the execution must not trigger an events. Otherwise, it will 
+cause deadly recursive call for the event method and it will never end.
+
+Set **`noevent=true`** to disable triggering an events.
+
+
+```C#
+// this will be invoked after the execution completes.
 private void Mapper_ExecutedEvent(CommandEventArgs args, ResultInfo result)
 {
    var param = new
@@ -327,6 +341,63 @@ private void Mapper_ExecutedEvent(CommandEventArgs args, ResultInfo result)
    Assert.AreEqual(1, insertedRows, "Invalid inserted log record.");
 }
 ```
+
+```TSQL
+CREATE TABLE DBLog
+(
+   Started datetime NULL,
+   Kind int NULL,
+   Sql varchar(4000) NULL,
+   Duration int NULL,
+   Rows int NULL
+)
+```
+
+### Event Implementation - Example #2. To control database operation.
+Let's implement some database policy to stop any database change operation
+such as update, insert, delete. And let's say all those operations use 
+non-query execution method.
+
+
+So, we need some state object to pass to execution method and events.
+Let's create DatabaseControl class for it.
+```C#
+   public class DatabaseControl
+   {
+      public bool StopNonQuery { get; set; }
+   }
+```
+
+Somewhere we manage a state data, for example, 
+it could be in the BaseController or as global variable.
+```C#
+   // this is user state object to pass to events to control operation.
+   DatabaseControl dbc = new DatabaseControl();
+   dbc.StopNonQuery = true;
+```
+
+When we execute non-query command, a state object needs to be passed.
+```C#
+   // passes the state object to non-query execution.
+   string sql = "delete from Customer where Id=@Id"
+   var result = connection.NonQuery(CommandType.Text, sql, new { Id = 1 }, state: dbc);
+```
+
+When the event gets called, we can cancel the execution if it's a non-query.
+```C#
+private void Mapper_ExecutingEvent(CommandEventArgs args)
+{
+   // the event function will be invoked when a command is coming to execute.
+   Console.WriteLine("Executing {0}: {1}", args.Kind, args.Sql);
+
+   // test our logic to CANCEL the execution based on state data.
+   DatabaseControl dbc = (DatabaseControl)args.State;
+   if (dbc.StopNonQuery && args.ExecutionType == ExecutionType.NonQuery) 
+      args.Cancel = true;
+}
+```
+
+
 
 
 ## DB providers can be used

@@ -119,24 +119,31 @@ END";
       const string create_table1 = @"
 CREATE TABLE ##DBLog
 (
-   Started datetime,
-   Kind int,
-   Sql varchar(4000),
-   Duration int,
-   Rows int
-);";
+   Started datetime NULL,
+   Kind int NULL,
+   Sql varchar(4000) NULL,
+   Duration int NULL,
+   Rows int NULL
+)";
 
 
       [TestMethod]
       public void SelectQuery_WithEvent()
       {
-         // create temp table at first.
-         connection.NonQuery(CommandType.Text, create_table1);
+         // passes some state data to the events to control operation.
+         DatabaseControl dbc = new DatabaseControl();
+
+         // let's stop any non-query operation such as update, insert, delete.
+         dbc.StopNonQuery = true;
+
+         // creates temp table at first.
+         connection.NonQuery(CommandType.Text, create_table1, state: dbc);
 
 
          Mapper.ExecutingEvent += Mapper_ExecutingEvent;
          Mapper.ExecutedEvent += Mapper_ExecutedEvent;
 
+         // somewhere non-query execution is called.
          SelectQuery_Basic();
 
          Mapper.ExecutingEvent -= Mapper_ExecutingEvent;
@@ -168,7 +175,13 @@ CREATE TABLE ##DBLog
 
       private void Mapper_ExecutingEvent(CommandEventArgs args)
       {
+         // the event function will be invoked when a command is coming to execute.
          Console.WriteLine("Executing {0}: {1}", args.Kind, args.Sql);
+
+         // also, you are able to CANCEL the execution based on your state information.
+         DatabaseControl dbc = (DatabaseControl)args.State;
+         if (dbc.StopNonQuery && args.ExecutionType == ExecutionType.NonQuery) 
+            args.Cancel = true;
       }
 
       #endregion

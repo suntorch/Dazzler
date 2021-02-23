@@ -34,4 +34,9 @@ namespace Dazzler.Test
       [Bind(ParameterDirection.Output, 200)]
       public string value2 { get; set; }
    }
+
+   public class DatabaseControl
+   {
+      public bool StopNonQuery { get; set; }
+   }
 }

@@ -264,6 +264,8 @@ namespace Dazzler
       /// <returns></returns>
       private static int ExecuteNonQueryImpl(this IDbConnection conn, CommandArgs args, ResultInfo ri)
       {
+         args.ExecutionType = ExecutionType.NonQuery;
+
          return ExecuteImpl<int>(conn, args, ri, (command, data, lookup) =>
          {
             List<int> result = new List<int>();
@@ -282,6 +284,8 @@ namespace Dazzler
       /// <returns></returns>
       private static T ExecuteScalarImpl<T>(this IDbConnection conn, CommandArgs args, ResultInfo ri)
       {
+         args.ExecutionType = ExecutionType.Scalar;
+
          return ExecuteImpl<T>(conn, args, ri, (command, data, lookup) =>
          {
             List<T> result = new List<T>();

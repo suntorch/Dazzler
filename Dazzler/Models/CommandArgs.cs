@@ -4,10 +4,19 @@ using System.Data;
 
 namespace Dazzler.Models
 {
+   public enum ExecutionType
+   {
+      Query, NonQuery, Scalar
+   }
+
    public class CommandArgs : CommandInfo
    {
       public IDbTransaction Transaction { get; set; }
 
+      /// <summary>
+      /// Specifies execution method type.
+      /// </summary>
+      public ExecutionType ExecutionType { get; set; }
 
       /// <summary>
       /// Specifies whether to invoke an execution events ExecutingEvent and ExecutedEvent.
