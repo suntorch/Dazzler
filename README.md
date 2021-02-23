@@ -310,11 +310,11 @@ private void Mapper_ExecutedEvent(CommandEventArgs args, ResultInfo result)
 
 Let's implement a storing all database operation into the DBLog table,
 after execution completes.
-Please be aware of when we execute any database operation from the event 
-method, the execution must not trigger an events. Otherwise, it will 
+Please be aware of when we execute any database operation from an event 
+method, the execution must not trigger events. Otherwise, it will 
 cause deadly recursive call for the event method and it will never end.
 
-Set **`noevent=true`** to disable triggering an events.
+Set **`noevent=true`** to disable a triggering events.
 
 
 ```C#
@@ -355,12 +355,12 @@ CREATE TABLE DBLog
 
 ### Event Implementation - Example #2. To control database operation.
 Let's implement some database policy to stop any database change operation
-such as update, insert, delete. And let's say all those operations use 
-non-query execution method.
+such as update, insert, delete. Let's assume that all those operations use 
+a non-query execution method.
 
 
-So, we need some state object to pass to execution method and events.
-Let's create DatabaseControl class for it.
+So, we need a state object to pass to execution method and events.
+A state object can be defined as DatabaseControl class.
 ```C#
    public class DatabaseControl
    {
@@ -368,7 +368,7 @@ Let's create DatabaseControl class for it.
    }
 ```
 
-Somewhere we manage a state data, for example, 
+Somewhere we manage a state data, for example,
 it could be in the BaseController or as global variable.
 ```C#
    // this is user state object to pass to events to control operation.
@@ -376,20 +376,18 @@ it could be in the BaseController or as global variable.
    dbc.StopNonQuery = true;
 ```
 
-When we execute non-query command, a state object needs to be passed.
+When we execute non-query command, the state object needs to be passed.
 ```C#
    // passes the state object to non-query execution.
    string sql = "delete from Customer where Id=@Id"
    var result = connection.NonQuery(CommandType.Text, sql, new { Id = 1 }, state: dbc);
 ```
 
-When the event gets called, we can cancel the execution if it's a non-query.
+When the event gets invoked, we can cancel the execution if it's a non-query.
 ```C#
+// the event function will be invoked when a command is coming to execute.
 private void Mapper_ExecutingEvent(CommandEventArgs args)
 {
-   // the event function will be invoked when a command is coming to execute.
-   Console.WriteLine("Executing {0}: {1}", args.Kind, args.Sql);
-
    // test our logic to CANCEL the execution based on state data.
    DatabaseControl dbc = (DatabaseControl)args.State;
    if (dbc.StopNonQuery && args.ExecutionType == ExecutionType.NonQuery) 
