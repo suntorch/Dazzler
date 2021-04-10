@@ -396,8 +396,8 @@ private void Mapper_ExecutingEvent(CommandEventArgs args)
 ```
 
 
-## DbContext Supports IServiceComponent
-DbContext class can be used to work with .Net Core Service container or any non-static class operations.
+## DbContext
+DbContext class can be used to work with Dependency Injection Container or any other class instance usage.
 
 
 
