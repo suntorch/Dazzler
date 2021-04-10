@@ -94,8 +94,6 @@ namespace Dazzler
          CommandType kind,
          string sql,
          object data = null,
-         int? offset = null,
-         int? limit = null,
          int? timeout = null,
          bool? noevent = false,
          object state = null,
@@ -107,8 +105,6 @@ namespace Dazzler
             Sql = sql,
             Data = data,
             State = state,
-            Offset = offset,
-            Limit = limit,
             Timeout = timeout,
             NoEvent = noevent
          }, ri);
@@ -117,21 +113,19 @@ namespace Dazzler
       public static T Scalar<T>(this IDbConnection conn,
          string sql,
          object data = null,
-         int? offset = null,
-         int? limit = null,
          int? timeout = null,
          bool? noevent = false,
          object state = null,
          ResultInfo ri = null)
 
-         => Scalar<T>(conn, CommandType.StoredProcedure, sql, data, offset, limit, timeout, noevent, state, ri);
+         => Scalar<T>(conn, CommandType.StoredProcedure, sql, data, timeout, noevent, state, ri);
 
       #endregion
 
       #region execute query
 
       public static List<T> Query<T>(this IDbConnection conn, CommandArgs args, ResultInfo ri)
-         => ExecuteImpl<T>(conn, args, ri, new QueryGenericReader<T>());
+         => ExecuteQueryImpl<T>(conn, args, ri, new QueryGenericReader<T>());
 
 
       public static List<T> Query<T>(this IDbConnection conn,
@@ -171,7 +165,6 @@ namespace Dazzler
          => Query<T>(conn, CommandType.StoredProcedure, sql, data, offset, limit, timeout, noevent, state, ri);
 
 
-      #endregion
-
-   }
+        #endregion
+    }
 }

@@ -360,7 +360,7 @@ a non-query execution method.
 
 
 So, we need a state object to pass to execution method and events.
-A state object can be defined as DatabaseControl class.
+A state object can be defined as DatabaseControl class as shown below.
 ```C#
    public class DatabaseControl
    {
@@ -371,12 +371,12 @@ A state object can be defined as DatabaseControl class.
 Somewhere we manage a state data, for example,
 it could be in the BaseController or as global variable.
 ```C#
-   // this is user state object to pass to events to control operation.
+   // this is user state object to pass to events to control an operation.
    DatabaseControl dbc = new DatabaseControl();
    dbc.StopNonQuery = true;
 ```
 
-When we execute non-query command, the state object needs to be passed.
+When we execute the non-query command, the state object needs to be passed.
 ```C#
    // passes the state object to non-query execution.
    string sql = "delete from Customer where Id=@Id"
