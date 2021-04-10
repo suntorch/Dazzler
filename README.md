@@ -6,8 +6,7 @@ Dazzler is a NuGet data access library that extends IDbConnection interface.
 - lightweight and high performance. :rocket: 
 - mapping a query result :scroll: to **`strongly-typed`** object.
 - 2-way binding :link: a class property to **`input`** and **`output`** parameters.
-- parameterized execution.
-- fetching and paging
+- parameterized execution, fetching and paging
 - dependency injection :syringe: for .Net Core apps and more...
 
 
