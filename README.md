@@ -396,6 +396,9 @@ private void Mapper_ExecutingEvent(CommandEventArgs args)
 ```
 
 
+## DbContext Supports IServiceComponent
+DbContext class can be used to work with .Net Core Service container or any non-static class operations.
+
 
 
 ## DB providers can be used
@@ -411,7 +414,7 @@ You can see :eyes: and learn :green_book: from the test project [Dazzler.Test](h
 ## Installation
 Please use the following command in the NuGet Package Manager Console to install the library.
 ```
-Install-Package SunTorch.Dazzler -Version 1.2.3
+Install-Package SunTorch.Dazzler -Version 1.2.4
 ```
 
 Happy coding! 
