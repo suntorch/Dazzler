@@ -13,8 +13,8 @@ namespace Dazzler
       #region Bool convertion
       static public bool ToBool(object value)
       {
-         if (value is bool) return (bool)value;
-         else if (value is string && string.Equals(value, "1")) return true;
+         if (value is bool b) return b;
+         else if (value is string s && s == "1") return true;
 
          bool.TryParse(Convert.ToString(value), out bool result);
          return result;
@@ -24,8 +24,8 @@ namespace Dazzler
       static public int ToInt(object value)
       {
          if (value == null || value == DBNull.Value) return 0;
-         else if (value is int) return (int)value;
-         else if (value is bool) return (bool)value ? 1 : 0;
+         else if (value is int i) return i;
+         else if (value is bool b) return b ? 1 : 0;
 
          int.TryParse(Convert.ToString(value), System.Globalization.NumberStyles.Any, null, out int result);
          return result;
@@ -33,8 +33,8 @@ namespace Dazzler
       static public long ToLong(object value)
       {
          if (value == null || value == DBNull.Value) return 0;
-         else if (value is long) return (long)value;
-         else if (value is bool) return (bool)value ? 1 : 0;
+         else if (value is long l) return l;
+         else if (value is bool b) return b ? 1 : 0;
 
          long.TryParse(Convert.ToString(value), System.Globalization.NumberStyles.Any, null, out long result);
          return result;
@@ -42,8 +42,8 @@ namespace Dazzler
       static public double ToDouble(object value)
       {
          if (value == null || value == DBNull.Value) return 0;
-         else if (value is double) return (double)value;
-         else if (value is bool) return (bool)value ? 1 : 0;
+         else if (value is double d) return d;
+         else if (value is bool b) return b ? 1.0D : 0.0D;
 
          double.TryParse(Convert.ToString(value), System.Globalization.NumberStyles.Any, null, out double result);
          return result;
@@ -51,8 +51,8 @@ namespace Dazzler
       static public decimal ToDecimal(object value)
       {
          if (value == null || value == DBNull.Value) return 0.0M;
-         else if (value is decimal) return (decimal)value;
-         else if (value is bool) return (bool)value ? 1 : 0;
+         else if (value is decimal d) return d;
+         else if (value is bool b) return b ? 1.0M : 0.0M;
 
          decimal.TryParse(Convert.ToString(value), System.Globalization.NumberStyles.Any, null, out decimal result);
          return result;
@@ -150,17 +150,17 @@ namespace Dazzler
       static public DateTime ToDateTime(object value)
       {
          if (value is DateTime) return (DateTime)value;
-         
+
          DateTime.TryParseExact(Convert.ToString(value)
-             , new string[] { 
-                "G", 
-                "yyyyMMdd HH:mm:ss", 
-                "yyyy/M/d HH:mm:ss", 
-                "yyyy-M-d HH:mm:ss", 
-                "yyyy.M.d HH:mm:ss", 
-                "yyyyMMdd", 
-                "yyyy/M/d", 
-                "yyyy-M-d", 
+             , new string[] {
+                "G",
+                "yyyyMMdd HH:mm:ss",
+                "yyyy/M/d HH:mm:ss",
+                "yyyy-M-d HH:mm:ss",
+                "yyyy.M.d HH:mm:ss",
+                "yyyyMMdd",
+                "yyyy/M/d",
+                "yyyy-M-d",
                 "yyyy.M.d"}
              , null, System.Globalization.DateTimeStyles.None, out DateTime result);
 
@@ -317,9 +317,26 @@ namespace Dazzler
       #endregion
       #region Object convertion
 
-      static public object To(Type type, object value)
+      /// <summary>
+      /// It converts the value to underlying type.
+      /// </summary>
+      /// <param name="type"></param>
+      /// <param name="value"></param>
+      /// <returns></returns>
+      static public object To(Type type, object value) => To(type, value, out Type underlyingType, null);
+
+      /// <summary>
+      /// It converts the value to underlying type.
+      /// </summary>
+      /// <param name="type"></param>
+      /// <param name="value"></param>
+      /// <param name="underlyingType"></param>
+      /// <param name="nullValue"></param>
+      /// <returns></returns>
+      static public object To(Type type, object value, out Type underlyingType, object nullValue = null)
       {
          bool isNullable = false;
+         bool isEnum = false;
 
          // gets inner type if nullable.
          if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
@@ -327,13 +344,25 @@ namespace Dazzler
             isNullable = true;
             type = Nullable.GetUnderlyingType(type);
          }
+         if (type.IsEnum)
+         {
+            isEnum = true;
+            type = Enum.GetUnderlyingType(type);
+         }
+
+         underlyingType = type;
 
          // returns for the nullable value.
-         if ((value == null || value == DBNull.Value) && isNullable) return null;
+         if ((value == null || value == DBNull.Value) && isNullable) return nullValue;
 
 
          // converts into target type.
-         if (type == typeof(string)) value = Utility.ToStr(value);
+         if (isEnum)
+         {
+            if (value == null || value == DBNull.Value) value = Convert.ChangeType(0, type);
+            else value = Convert.ChangeType(value, type);
+         }
+         else if (type == typeof(string)) value = Utility.ToStr(value);
          else if (type == typeof(byte) || type == typeof(sbyte)) value = (byte)Utility.ToInt(value);
          else if (type == typeof(Int16) || type == typeof(UInt16)) value = (Int16)Utility.ToInt(value);
          else if (type == typeof(Int32) || type == typeof(UInt32)) value = (Int32)Utility.ToInt(value);
@@ -344,11 +373,56 @@ namespace Dazzler
          else if (type == typeof(float)) value = (float)Utility.ToDouble(value);
          else if (type == typeof(bool)) value = Utility.ToBool(value);
          else if (type == typeof(Byte[])) value = (value is byte[]? (byte[])value : null);
-         else if (type.IsEnum)
+         else if (type == typeof(Guid))
          {
-            if (value == null || value == DBNull.Value) value = Enum.ToObject(type, 0);
-            else value = Enum.ToObject(type, ToInt(value));
+            if (value == null || value == DBNull.Value) value = Guid.Empty;
+            else value = new Guid(Utility.ToStr(value));
          }
+
+         return value;
+      }
+
+      /// <summary>
+      /// It converts the value from underlying type to desired type.
+      /// </summary>
+      /// <param name="type"></param>
+      /// <param name="value"></param>
+      /// <param name="underlyingType"></param>
+      /// <param name="nullValue"></param>
+      /// <returns></returns>
+      static public object From(Type type, object value)
+      {
+         bool isNullable = false;
+         Type underlyingType = type;
+
+         // gets inner type if nullable.
+         if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+         {
+            isNullable = true;
+            underlyingType = Nullable.GetUnderlyingType(type);
+         }
+
+         // returns for the nullable value.
+         if ((value == null || value == DBNull.Value) && isNullable) return null;
+
+
+         // converts into target type.
+         if (underlyingType.IsEnum)
+         {
+            if (value == null || value == DBNull.Value) value = Enum.ToObject(underlyingType, 0);
+            else value = Enum.ToObject(underlyingType, value);
+         }
+         else if (type == typeof(string)) value = Utility.ToStr(value);
+         else if (type == typeof(byte) || type == typeof(sbyte)) value = (byte)Utility.ToInt(value);
+         else if (type == typeof(Int16) || type == typeof(UInt16)) value = (Int16)Utility.ToInt(value);
+         else if (type == typeof(Int32) || type == typeof(UInt32)) value = (Int32)Utility.ToInt(value);
+         else if (type == typeof(Int64) || type == typeof(UInt64)) value = Utility.ToLong(value);
+         else if (type == typeof(DateTime)) value = Utility.ToDateTime(value);
+         else if (type == typeof(Decimal)) value = Utility.ToDecimal(value);
+         else if (type == typeof(Double)) value = Utility.ToDouble(value);
+         else if (type == typeof(float)) value = (float)Utility.ToDouble(value);
+         else if (type == typeof(bool)) value = Utility.ToBool(value);
+         else if (type == typeof(Byte[])) value = (value is byte[]? (byte[])value : null);
          else if (type == typeof(Guid))
          {
             if (value == null || value == DBNull.Value) value = Guid.Empty;

@@ -74,6 +74,32 @@ namespace Dazzler.Test
          Assert.AreNotEqual(Guid.Empty, result.FirstOrDefault()?.Guid, "Invalid value.");
       }
 
+      [TestMethod]
+      public void QueryEnumValue()
+      {
+         var args = new
+         {
+            inputValue = System.Data.ConnectionState.Executing,
+            outputValue__out = (System.Data.ConnectionState?)null
+         };
+
+         var result = connection.Query<ValueTestResult>(CommandType.Text, $"select @outputValue=@inputValue", args);
+         Assert.AreEqual(args.inputValue, args.outputValue__out, "Invalid value.");
+      }
+
+      [TestMethod]
+      public void QueryEnumNullValue()
+      {
+         var args = new
+         {
+            inputValue = (System.Data.ConnectionState?)null,
+            outputValue__out = (System.Data.ConnectionState?)null
+         };
+
+         var result = connection.Query<ValueTestResult>(CommandType.Text, $"select @outputValue=@inputValue", args);
+         Assert.AreEqual(args.inputValue, args.outputValue__out, "Invalid value.");
+      }
+
       #endregion
 
       #region non-query strongly-typed input test
