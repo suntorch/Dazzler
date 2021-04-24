@@ -15,7 +15,7 @@ namespace Dazzler
 
 
    /// <summary>
-   /// 
+   /// Specifies a binding information.
    /// </summary>
    public class BindAttribute : Attribute
    {
@@ -37,4 +37,5 @@ namespace Dazzler
       }
 
    }
+
 }
