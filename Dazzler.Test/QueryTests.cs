@@ -179,9 +179,12 @@ CREATE TABLE ##DBLog
          Console.WriteLine("Executing {0}: {1}", args.Kind, args.Sql);
 
          // also, you are able to CANCEL the execution based on your state information.
-         DatabaseControl dbc = (DatabaseControl)args.State;
-         if (dbc.StopNonQuery && args.ExecutionType == ExecutionType.NonQuery) 
-            args.Cancel = true;
+         if (args.State == null) return;
+         if (args.State is DatabaseControl myControl)
+         {
+            if (myControl.StopNonQuery && args.ExecutionType == ExecutionType.NonQuery)
+               args.Cancel = true;
+         }
       }
 
       #endregion
