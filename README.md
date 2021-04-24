@@ -397,7 +397,69 @@ private void Mapper_ExecutingEvent(CommandEventArgs args)
 
 
 ## DbContext
-DbContext class can be used to work with Dependency Injection Container or any other class instance usage.
+DbContext class can be used to work with Dependency Injection Container in .NET Core environment or any other instance usage.
+The below example describes how to use DbContext in the ASP.NET Core web application.
+
+### ASP.NET Core Dependency Injection
+First, let's create SqlContext abstract class that defines the IDbConnection type 
+and passes the connection string that is configured in the DbContextOptions.
+Then this class will be used to create a DbContext class.
+```C#
+public abstract class SqlContext : DbContext
+{
+    public SqlContext(DbContextOptions options) : base(new SqlConnection()) => this.DbConnection.ConnectionString = options.ConnectionString;
+}
+```
+
+Now let's do actual DBContext class with methods that are mapped to the database stored procedures.
+Mapping is so simple, just give same name with a stored procedure to your method.
+Or, you can specify the name in the arguments of the query function.
+```C#
+public class CustomerDbContext : SqlContext
+{
+   // mapped stored procedures
+   public List<CustomerSearchResult> CustomerSearch(CustomerSearchArgs args) => this.Query<CustomerSearchResult>(args);
+   public int CustomerUpdate(CustomerUpdateArgs args) => this.NonQuery(args);
+}
+```
+
+IServiceCollection.AddDazzler method allows you to register your DbContext class to the scopped service container
+along with DbContextOptions.
+```C#
+public void ConfigureServices(IServiceCollection services)
+{
+   ...
+   services.AddDazzler<CustomerDbContext>(options => options.ConnectionString = Configuration["AppSettings:ConnectionString"]);
+   ...
+}
+```
+Now it's ready to use our DbContext in the controller classes defining CustomerDbContext class type in the constructor method 
+in order to get it from service container. That's it. Now you are able to call mapped methods in your controller.
+```C#
+[Route("[controller]")]
+[ApiController]
+public class CustomerController : ControllerBase
+{
+   private CustomerDbContext _customerDbContext;
+   
+   public UserController(CustomerDbContext customerDbContext)
+   {
+      _customerDbContext = customerDbContext;
+   }
+   
+   public IActionResult SearchCustomers()
+   {
+      var args = new CustomerSearchArgs
+      {
+         FirstName = "John",
+         LastName = "Doe"
+      };
+
+      var result = _customerDbContext.CustomerSearch(args);
+      return Ok(result);
+   }
+}
+```
 
 
 
