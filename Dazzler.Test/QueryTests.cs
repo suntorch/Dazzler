@@ -155,6 +155,24 @@ END";
       }
 
       [TestMethod]
+      public void InsertIdentityTestBySuffix2()
+      {
+
+         // create a test stored procedure.
+         connection.NonQuery(CommandType.Text, drop_table_identity_test);
+         connection.NonQuery(CommandType.Text, create_table_identity_test);
+         connection.NonQuery(CommandType.Text, create_sp_identity_test);
+
+         var args = new InsertIdentityArgs2
+         {
+            Id__inout = 0,
+            Value = "Text value"
+         };
+         var result = connection.Query<QueryTestResult>(CommandType.StoredProcedure, "Dazzler_IdentityTest", args);
+         Assert.AreEqual(1, args.Id__inout, "Invalid returning identity value.");
+      }
+
+      [TestMethod]
       public void InsertIdentityTestByBindAttribute()
       {
 

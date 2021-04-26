@@ -30,7 +30,13 @@ namespace Dazzler.Handlers
          }
       }
 
-      public void SetValue(object parameterObject, string name, object value) => Utility.SetBackiingFieldValue(parameterObject, name, value);
-
+      public void SetValue(object parameterObject, string name, object value)
+      {
+         if (parameterObject is null) return;
+         if (parameterObject.GetType().Name.Contains("AnonymousType"))
+            Utility.SetBackiingFieldValue(parameterObject, name, value);
+         else
+            Utility.SetPropertyValue(parameterObject, name, value);
+      }
    }
 }

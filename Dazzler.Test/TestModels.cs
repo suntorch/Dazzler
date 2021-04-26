@@ -47,4 +47,11 @@ namespace Dazzler.Test
       public int Id {get;set;}
       public string Value { get; set; }
    };
+
+   public class InsertIdentityArgs2
+   {
+      public int Id__inout { get; set; }
+      public string Value { get; set; }
+   };
+
 }
