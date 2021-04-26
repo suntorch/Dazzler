@@ -39,4 +39,12 @@ namespace Dazzler.Test
    {
       public bool StopNonQuery { get; set; }
    }
+
+
+   public class InsertIdentityArgs
+   {
+      [Dazzler.Bind(ParameterDirection.Output)]
+      public int Id {get;set;}
+      public string Value { get; set; }
+   };
 }

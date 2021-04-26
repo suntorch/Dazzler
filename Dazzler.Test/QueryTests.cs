@@ -107,9 +107,69 @@ END";
       {
          // create a test stored procedure.
          connection.NonQuery(CommandType.Text, create_proc2);
-         
+
          var result = connection.Query<QueryTestResult>(CommandType.StoredProcedure, "Dazzler_SP2", null);
          Assert.AreEqual(2, result.Count, "Invalid output record count.");
+      }
+
+      #endregion
+
+      #region 
+
+      const string drop_table_identity_test = @"DROP TABLE IF EXISTS ##DBIdentityTest";
+      const string create_table_identity_test = @"
+CREATE TABLE ##DBIdentityTest
+(
+   Id bigint IDENTITY(1,1) NOT NULL,
+   Value varchar(100) NULL
+)";
+
+      const string create_sp_identity_test = @"
+CREATE OR ALTER PROCEDURE Dazzler_IdentityTest
+   @Id bigint out,
+	@Value varchar(100)
+AS
+BEGIN
+	insert into ##DBIdentityTest (Value)
+   values (@Value)
+
+   set @Id = @@IDENTITY
+END";
+
+      [TestMethod]
+      public void InsertIdentityTestBySuffix()
+      {
+
+         // create a test stored procedure.
+         connection.NonQuery(CommandType.Text, drop_table_identity_test);
+         connection.NonQuery(CommandType.Text, create_table_identity_test);
+         connection.NonQuery(CommandType.Text, create_sp_identity_test);
+
+         var args = new
+         {
+            Id__inout = 0,
+            Value = "Text value"
+         };
+         var result = connection.Query<QueryTestResult>(CommandType.StoredProcedure, "Dazzler_IdentityTest", args);
+         Assert.AreEqual(1, args.Id__inout, "Invalid returning identity value.");
+      }
+
+      [TestMethod]
+      public void InsertIdentityTestByBindAttribute()
+      {
+
+         // create a test stored procedure.
+         connection.NonQuery(CommandType.Text, drop_table_identity_test);
+         connection.NonQuery(CommandType.Text, create_table_identity_test);
+         connection.NonQuery(CommandType.Text, create_sp_identity_test);
+
+         var args = new InsertIdentityArgs
+         {
+            Id = 0,
+            Value = "Text value"
+         };
+         var result = connection.Query<QueryTestResult>(CommandType.StoredProcedure, "Dazzler_IdentityTest", args);
+         Assert.AreEqual(1, args.Id, "Invalid returning identity value.");
       }
 
       #endregion
