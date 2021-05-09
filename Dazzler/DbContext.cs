@@ -10,15 +10,19 @@ namespace Dazzler
    public class DbContext : IDbContext
    {
       public IDbConnection DbConnection { get; internal set; }
+      public DbContextOptions Options { get; internal set; }
 
-      public DbContext(IDbConnection db, DbContextOptions options) {
-         this.DbConnection = db;
-         this.DbConnection.ConnectionString = options.ConnectionString;
+
+      public DbContext(IDbConnection db, DbContextOptions options)
+      {
+         this.Options = options;
+
+         if (db != null) this.DbConnection = db;
+         if (!string.IsNullOrEmpty(options?.ConnectionString)) this.DbConnection.ConnectionString = options.ConnectionString;
       }
-      public DbContext(IDbConnection db) => this.DbConnection = db;
-      public DbContext(DbContextOptions options) { }
+      public DbContext(IDbConnection db) : this(db, null) { }
+      public DbContext(DbContextOptions options) : this(null, options) { }
       public DbContext() { }
-
 
 
       protected List<T> Query<T>(string name, object args
@@ -27,14 +31,17 @@ namespace Dazzler
           , int? timeout = null
           , bool? noevent = null
           , object state = null
+          , Cache cache = null
           , ResultInfo ri = null)
       {
+         cache?.Init(this.Options);
          return DbConnection.Query<T>(CommandType.StoredProcedure, name, args
              , offset: offset
              , limit: limit
              , timeout: timeout
              , noevent: noevent
              , state: state
+             , cache: cache
              , ri: ri);
       }
       protected List<T> Query<T>(object args
@@ -43,15 +50,18 @@ namespace Dazzler
           , int? timeout = null
           , bool? noevent = null
           , object state = null
+          , Cache cache = null
           , ResultInfo ri = null
           , [CallerMemberName] string name = null)
       {
+         cache?.Init(this.Options);
          return DbConnection.Query<T>(CommandType.StoredProcedure, name, args
              , offset: offset
              , limit: limit
              , timeout: timeout
              , noevent: noevent
              , state: state
+             , cache: cache
              , ri: ri);
       }
 
@@ -61,14 +71,17 @@ namespace Dazzler
           , int? timeout = null
           , bool? noevent = null
           , object state = null
+          , Cache cache = null
           , ResultInfo ri = null)
       {
+         cache?.Init(this.Options);
          return DbConnection.Query<T>(CommandType.Text, sql, args
              , offset: offset
              , limit: limit
              , timeout: timeout
              , noevent: noevent
              , state: state
+             , cache: cache
              , ri: ri);
       }
 
@@ -77,25 +90,31 @@ namespace Dazzler
           , int? timeout = null
           , bool? noevent = null
           , object state = null
+          , Cache cache = null
           , ResultInfo ri = null)
       {
+         cache?.Init(this.Options);
          return DbConnection.Scalar<T>(CommandType.StoredProcedure, name, args
              , timeout: timeout
              , noevent: noevent
              , state: state
+             , cache: cache
              , ri: ri);
       }
       protected T Scalar<T>(object args
           , int? timeout = null
           , bool? noevent = null
           , object state = null
+          , Cache cache = null
           , ResultInfo ri = null
           , [CallerMemberName] string name = null)
       {
+         cache?.Init(this.Options);
          return DbConnection.Scalar<T>(CommandType.StoredProcedure, name, args
              , timeout: timeout
              , noevent: noevent
              , state: state
+             , cache: cache
              , ri: ri);
       }
 
@@ -103,12 +122,15 @@ namespace Dazzler
           , int? timeout = null
           , bool? noevent = null
           , object state = null
+          , Cache cache = null
           , ResultInfo ri = null)
       {
+         cache?.Init(this.Options);
          return DbConnection.Scalar<T>(CommandType.Text, sql, args
              , timeout: timeout
              , noevent: noevent
              , state: state
+             , cache: cache
              , ri: ri);
       }
 
@@ -152,10 +174,5 @@ namespace Dazzler
              , ri: ri);
       }
 
-   }
-
-   public class DbContextOptions
-   {
-      public string ConnectionString { get; set; }
    }
 }

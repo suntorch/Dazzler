@@ -2,17 +2,18 @@
 
   <PropertyGroup>
     <TargetFrameworks>net5.0;netcoreapp3.1;netcoreapp2.1;netstandard2.1;net472;net46;net45</TargetFrameworks>
+    <LangVersion>latest</LangVersion>
     <Authors>Amarsanaa Amgalan</Authors>
     <Company>Amarsanaa Amgalan</Company>
     <Description>A simple Micro-ORM supporting SQL Server, MySQL, Firebird, PostgreSQL and Oracle.</Description>
-    <Version>1.2.6</Version>
+    <Version>1.2.7</Version>
     <PackageTags>sql;query;orm;micro-orm;dotnet-orm</PackageTags>
     <PackageId>SunTorch.Dazzler</PackageId>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl></RepositoryUrl>
     <Copyright>Amarsanaa Amgalan</Copyright>
     <PackageProjectUrl>https://github.com/suntorch/Dazzler.Wiki</PackageProjectUrl>
-    <AssemblyVersion>1.2.5.0</AssemblyVersion>
+    <AssemblyVersion>1.2.7.0</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,6 +27,9 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection">
       <Version>5.0.1</Version>
     </PackageReference>
+    <PackageReference Include="System.Text.Json">
+      <Version>5.0.2</Version>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp2.1'">
@@ -34,6 +38,9 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection">
       <Version>5.0.1</Version>
+    </PackageReference>
+    <PackageReference Include="System.Text.Json">
+      <Version>5.0.2</Version>
     </PackageReference>
   </ItemGroup>
 
@@ -44,6 +51,9 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection">
       <Version>5.0.1</Version>
     </PackageReference>
+    <PackageReference Include="System.Text.Json">
+      <Version>5.0.2</Version>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
@@ -53,6 +63,9 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection">
       <Version>5.0.1</Version>
     </PackageReference>
+    <PackageReference Include="System.Text.Json">
+      <Version>5.0.2</Version>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net5.0'">
@@ -61,6 +74,9 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection">
       <Version>5.0.1</Version>
+    </PackageReference>
+    <PackageReference Include="System.Text.Json">
+      <Version>5.0.2</Version>
     </PackageReference>
   </ItemGroup>
 

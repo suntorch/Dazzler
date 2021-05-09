@@ -9,9 +9,14 @@ namespace Dazzler
    /// <summary>
    /// internal use only.
    /// </summary>
-   internal class ParameterLookup
+   internal class OutputParameterInfo
    {
-      internal Dictionary<IDbDataParameter, ParameterLookupData> map;
       internal IParameterHandler parameterHandler;
+      internal string parameterName;
+
+      internal string propertyName;
+      internal Type propertyType;
+      internal ITypeHandler typeHandler;
+      internal object value;
    }
 }

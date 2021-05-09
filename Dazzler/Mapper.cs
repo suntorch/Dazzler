@@ -29,20 +29,34 @@ namespace Dazzler
 
       #region properties
 
-      public static string ParameterPrefix { get; set; } // if it's null, mapper detects automatically.
+      /// <summary>
+      /// Specifies a symbol of the database parameter in the query.
+      /// If it's null, mapper detects automatically.
+      /// </summary>
+      public static string ParameterPrefix { get; set; }
+
+      /// <summary>
+      /// Command execution timeout.
+      /// </summary>
       public static int? CommandTimeout { get; set; }
+
       #endregion
 
       #region methods
 
-      public static void Use<T>(IParameterHandler handler) where T : new()
-      {
-         _objectHandlers[typeof(T)] = handler;
-      }
-      public static void Use<T>(ITypeHandler handler) where T : new()
-      {
-         _valueHandlers[typeof(T)] = handler;
-      }
+      /// <summary>
+      /// Specifies a default handler for the parameter object.
+      /// </summary>
+      /// <typeparam name="T"></typeparam>
+      /// <param name="handler"></param>
+      public static void Use<T>(IParameterHandler handler) where T : new() => _objectHandlers[typeof(T)] = handler;
+
+      /// <summary>
+      /// Specifies a default type handler for the value type convertion.
+      /// </summary>
+      /// <typeparam name="T"></typeparam>
+      /// <param name="handler"></param>
+      public static void Use<T>(ITypeHandler handler) where T : new() => _valueHandlers[typeof(T)] = handler;
 
       #endregion
 
@@ -97,6 +111,7 @@ namespace Dazzler
          int? timeout = null,
          bool? noevent = false,
          object state = null,
+         Cache cache = null,
          ResultInfo ri = null)
 
          => Scalar<T>(conn, new CommandArgs()
@@ -106,7 +121,8 @@ namespace Dazzler
             Data = data,
             State = state,
             Timeout = timeout,
-            NoEvent = noevent
+            NoEvent = noevent,
+            Cache = cache
          }, ri);
 
 
@@ -116,9 +132,10 @@ namespace Dazzler
          int? timeout = null,
          bool? noevent = false,
          object state = null,
+         Cache cache = null,
          ResultInfo ri = null)
 
-         => Scalar<T>(conn, CommandType.StoredProcedure, sql, data, timeout, noevent, state, ri);
+         => Scalar<T>(conn, CommandType.StoredProcedure, sql, data, timeout, noevent, state, cache, ri);
 
       #endregion
 
@@ -137,6 +154,7 @@ namespace Dazzler
          int? timeout = null,
          bool? noevent = false,
          object state = null,
+         Cache cache = null,
          ResultInfo ri = null)
 
          => Query<T>(conn, new CommandArgs()
@@ -148,7 +166,8 @@ namespace Dazzler
             Offset = offset,
             Limit = limit,
             Timeout = timeout,
-            NoEvent = noevent
+            NoEvent = noevent,
+            Cache = cache
          }, ri);
 
 
@@ -160,11 +179,12 @@ namespace Dazzler
          int? timeout = null,
          bool? noevent = false,
          object state = null,
+         Cache cache = null,
          ResultInfo ri = null)
 
-         => Query<T>(conn, CommandType.StoredProcedure, sql, data, offset, limit, timeout, noevent, state, ri);
+         => Query<T>(conn, CommandType.StoredProcedure, sql, data, offset, limit, timeout, noevent, state, cache, ri);
 
 
-        #endregion
-    }
+      #endregion
+   }
 }

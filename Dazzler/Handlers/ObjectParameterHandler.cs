@@ -14,19 +14,19 @@ namespace Dazzler.Handlers
    {
       public Type DesiredType { get; } = typeof(object);
 
-      public void ForEach(object parameterObject, Action<string, object, Type, BindAttribute> action)
+      public void ForEach(object parameterObject, ParameterOptions options)
       {
-         if (parameterObject == null || action == null) return;
+         if (parameterObject == null || options == null) return;
 
          Type type = parameterObject.GetType();
-         foreach (PropertyInfo pi in type.GetProperties())
+         foreach (PropertyInfo pi in type.GetProperties(BindingFlags.Public | BindingFlags.Instance))
          {
             // exception if member implemented IgnoreFetch attribute.
             if (pi.GetCustomAttribute<IgnoreFetchAttribute>(false) != null) continue; // skip
 
-            var attrParam = pi.GetCustomAttribute<BindAttribute>(false);
+            var attr = pi.GetCustomAttribute<BindAttribute>(false);
 
-            action?.Invoke(pi.Name, pi.GetValue(parameterObject), pi.PropertyType, attrParam);
+            options?.Invoke(pi.Name, pi.GetValue(parameterObject), pi.PropertyType, attr);
          }
       }
 

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Reflection;
@@ -455,16 +454,35 @@ namespace Dazzler
             pi2.SetValue(dest, value, null);
          }
       }
-      static public void Copy(object source, object dest)
-      {
-         Copy(source, dest, false);
-      }
-      static public T Copy<T>(T source)
+      static public void Copy(object source, object dest) => Copy(source, dest, false);
+
+      static public T Copy<T>(object source)
       {
          T instance = Activator.CreateInstance<T>();
          Copy(source, instance, false);
          return instance;
       }
+
+      static public string FastSerialize(string title, object source)
+      {
+         if (title == null && source == null) return null;
+
+         StringBuilder sb = new StringBuilder(title, 1024);
+         if (source != null)
+         {
+            var type = source.GetType();
+            sb.Append('\x0').Append(type.FullName);
+
+            // insert values of the properties.
+            foreach (PropertyInfo prop in type.GetProperties(BindingFlags.Public | BindingFlags.Instance))
+            {
+               sb.Append('\x0').Append(prop.GetValue(source, null));
+            }
+         }
+
+         return sb.ToString();
+      }
+
       #endregion
 
 

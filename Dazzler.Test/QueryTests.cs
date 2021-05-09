@@ -1,8 +1,9 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Data;
+using System.Linq;
 using Dazzler.Models;
-
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Dazzler.Test
 {
@@ -114,7 +115,7 @@ END";
 
       #endregion
 
-      #region 
+      #region output identity test
 
       const string drop_table_identity_test = @"DROP TABLE IF EXISTS ##DBIdentityTest";
       const string create_table_identity_test = @"
@@ -263,6 +264,53 @@ CREATE TABLE ##DBLog
             if (myControl.StopNonQuery && args.ExecutionType == ExecutionType.NonQuery)
                args.Cancel = true;
          }
+      }
+
+      #endregion
+
+      #region cache test
+
+      [TestMethod]
+      public void SelectQuery_Cache()
+      {
+         const string create_proc1 = @"
+CREATE OR ALTER PROCEDURE Dazzler_SP3
+AS
+BEGIN
+	select format(getdate(), 'yyyy/MM/dd HH:mm:ss.fff') Name, 99 Age
+END";
+
+
+         connection.UseMemoryCache(new MemoryCache(new MemoryCacheOptions { SizeLimit = 1024 }));
+
+
+         // create a test stored procedure.
+         connection.NonQuery(CommandType.Text, create_proc1);
+
+
+         var ri = new ResultInfo();
+         var cache = new Cache(5);
+
+         // initial getting
+         var result = connection.Query<QueryTestResult>(CommandType.StoredProcedure, "Dazzler_SP3", null, ri: ri, cache: cache);
+         Assert.AreEqual(1, ri.AffectedRows, "Invalid ResultInfo.AffectedRows.");
+
+
+         string firstValue = result.FirstOrDefault().Name;
+         
+         System.Threading.Thread.Sleep(1000);
+
+
+         var result2 = connection.Query<QueryTestResult>(CommandType.StoredProcedure, "Dazzler_SP3", null, ri: ri, cache: cache);
+         Assert.AreEqual(1, ri.AffectedRows, "Invalid ResultInfo.AffectedRows.");
+         Assert.AreEqual(firstValue, result2.FirstOrDefault().Name, "Invalid CACHED record.");
+
+
+         System.Threading.Thread.Sleep(5000);
+
+         var result3 = connection.Query<QueryTestResult>(CommandType.StoredProcedure, "Dazzler_SP3", null, ri: ri, cache: cache);
+         Assert.AreEqual(1, ri.AffectedRows, "Invalid ResultInfo.AffectedRows.");
+         Assert.AreNotEqual(firstValue, result3.FirstOrDefault().Name, "Cache expiration does not work.");
       }
 
       #endregion

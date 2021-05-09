@@ -15,16 +15,16 @@ namespace Dazzler.Handlers
    {
       public Type DesiredType { get; } = typeof(Dictionary<string, object>);
 
-      public void ForEach(object parameterObject, Action<string, object, Type, BindAttribute> action)
+      public void ForEach(object parameterObject, ParameterOptions options)
       {
-         if (parameterObject == null || action == null) return;
+         if (parameterObject == null || options == null) return;
          if (parameterObject.GetType() != DesiredType ) throw new ArgumentException();
 
          Dictionary<string, object> map = parameterObject as Dictionary<string, object>;
          foreach (string key in map.Keys)
          {
             object value = map[key];
-            action?.Invoke(key, value, value?.GetType() ?? typeof(string), null);
+            options?.Invoke(key, value, value?.GetType() ?? typeof(string), null);
          }
       }
 

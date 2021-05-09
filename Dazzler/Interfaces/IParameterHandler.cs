@@ -3,6 +3,8 @@
 
 namespace Dazzler.Interfaces
 {
+   public delegate void ParameterOptions(string name, object value, Type type, BindAttribute attr);
+
    /// <summary>
    /// Implement this interface to handle user parameter object.
    /// </summary>
@@ -18,8 +20,8 @@ namespace Dazzler.Interfaces
       /// and invoke an action method for each member in order to assign IDbParameter values.
       /// </summary>
       /// <param name="parameterObject">Parameter object such as Persistant or Anonymous class object or Dictionary etc.</param>
-      /// <param name="action">The action method to work for each parameter value to set IDbParameter.</param>
-      void ForEach(object parameterObject, Action<string, object, Type, BindAttribute> action);
+      /// <param name="options">Implementation has to call this action for each iteration in order to assign IDbParameter.</param>
+      void ForEach(object parameterObject, ParameterOptions options);
 
 
       /// <summary>

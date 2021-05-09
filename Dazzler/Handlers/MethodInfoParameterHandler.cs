@@ -17,9 +17,9 @@ namespace Dazzler.Handlers
    {
       public Type DesiredType { get; } = typeof(MethodInfo);
 
-      public void ForEach(object parameterObject, Action<string, object, Type, BindAttribute> action)
+      public void ForEach(object parameterObject, ParameterOptions options)
       {
-         if (parameterObject == null || action == null) return;
+         if (parameterObject == null || options == null) return;
          if (parameterObject.GetType() != DesiredType) throw new ArgumentException();
 
          var parameters = (parameterObject as MethodInfo).GetParameters();
