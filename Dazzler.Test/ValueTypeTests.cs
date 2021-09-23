@@ -216,6 +216,21 @@ namespace Dazzler.Test
          Assert.AreEqual(args.value1, args.value2__out, "Invalid output parameter value.");
       }
 
+      [TestMethod]
+      public void TestNullParameter()
+      {
+         var args = new
+         {
+            started = (DateTime?)null,
+            kind = (int?)null,
+            sql = (string)null,
+            duration = (int?)null,
+            rows = 0
+         };
+
+         connection.NonQuery(CommandType.StoredProcedure, "Test.dbo.TestNullParameter", args);
+      }
+
       #endregion
    }
 }

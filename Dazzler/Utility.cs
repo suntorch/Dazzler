@@ -60,12 +60,12 @@ namespace Dazzler
       #region Text convertion
       static public string ToStr(object value)
       {
-         if (value == null || Convert.IsDBNull(value)) return "";
+         if (value == null || Convert.IsDBNull(value)) return null;
          else return Convert.ToString(value);
       }
       static public string SubStr(string text, int index, int length)
       {
-         if (string.IsNullOrEmpty(text)) return "";
+         if (string.IsNullOrEmpty(text)) return null;
          string s = string.Empty;
          int len = text.Length - index;
 
@@ -93,13 +93,13 @@ namespace Dazzler
       }
       public static string PadRight(string sourceText, int length, char paddingChar = ' ')
       {
-         if (sourceText == null) sourceText = "";
+         if (sourceText == null) return null;
          if (sourceText.Length >= length) return sourceText.Substring(0, length);
          else return sourceText.PadRight(length, paddingChar);
       }
       public static string PadLeft(string sourceText, int length, char paddingChar = ' ')
       {
-         if (sourceText == null) sourceText = "";
+         if (sourceText == null) return null;
          if (sourceText.Length >= length) return sourceText.Substring(0, length);
          else return sourceText.PadLeft(length, paddingChar);
       }
@@ -342,6 +342,10 @@ namespace Dazzler
          {
             isNullable = true;
             type = Nullable.GetUnderlyingType(type);
+         }
+         else if (!type.IsValueType)
+         {
+            isNullable = true;
          }
          if (type.IsEnum)
          {
