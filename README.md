@@ -7,6 +7,7 @@ Dazzler is a NuGet data access library that extends IDbConnection interface.
 - mapping a query result :scroll: to **`strongly-typed`** object.
 - 2-way binding :link: a class property to **`input`** and **`output`** parameters.
 - parameterized execution, fetching, and paging.
+- query result caching with **`IMemoryCache`**, **`IDistributedCache`** 
 - dependency injection :syringe: for .net core apps and more...
 
 
@@ -476,7 +477,7 @@ You can see :eyes: and learn :green_book: from the test project [Dazzler.Test](h
 ## Installation
 Please use the following command in the NuGet Package Manager Console to install the library.
 ```
-Install-Package SunTorch.Dazzler -Version 1.2.6
+Install-Package SunTorch.Dazzler -Version 1.2.7
 ```
 
 Happy coding! 
