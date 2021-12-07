@@ -339,7 +339,7 @@ namespace Dazzler
             // assign output parameter values from the cache.
             ReadOutputParameters(null, args.Data, ci.outputs);
 
-            // assing ouput result from the cache.
+            // assign ouput result from the cache.
             result = (List<T>)ci.result;
 
             // skip database access and jump to the final stage.
