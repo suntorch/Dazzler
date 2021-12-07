@@ -9,9 +9,9 @@ using Dazzler.Test.Models;
 namespace Dazzler.Test
 {
     [TestClass]
-    public sealed class QueryTests : QueryTests<SqlServerClientProvider> { }
+    public sealed class TextQueryTests : TextQueryTests<SqlServerClientProvider> { }
 
-    public class QueryTests<TProvider> : TestBase<TProvider> where TProvider : DatabaseProvider
+    public class TextQueryTests<TProvider> : TestBase<TProvider> where TProvider : DatabaseProvider
     {
         [TestMethod]
         public void SimpleSelect()
@@ -126,62 +126,12 @@ END";
             Assert.AreEqual(false, result.Bool, "Invalid output Boolean value from 0 (int).");
         }
 
-        #region Stored Procedure tests
 
-        const string create_SP_SimpleSelect = @"
-CREATE OR ALTER PROCEDURE SP_SimpleSelect
-	@String varchar(50),
-	@Integer int
-AS
-BEGIN
-	select @String String, @Integer Integer
-END";
 
         [TestMethod]
-        public void SP_SimpleSelect()
+        public void WithControlEvent()
         {
-            // create a test stored procedure.
-            connection.NonQuery(CommandType.Text, create_SP_SimpleSelect);
-
-            var args = new
-            {
-                String = "John",
-                Integer = 25
-            };
-
-            var result = connection.Query<ValueTypeTestModel>(CommandType.StoredProcedure, "SP_SimpleSelect", args);
-            Assert.AreEqual(1, result.Count, "Invalid output record count.");
-            Assert.AreEqual(args.Integer, result[0].Integer, "Invalid record.");
-        }
-
-        const string create_SP_RaiseError = @"
-CREATE OR ALTER PROCEDURE SP_RaiseError
-AS BEGIN
-  -- If RAISEERROR is done before the SELECT, an exception will be received in C#
-  --RAISERROR('before select', 16, 1);
-
-  SELECT 'Monday' String, 10 Integer
-  UNION ALL SELECT 'Tuesday', 20
-
-  -- If RAISEERROR is done after the SELECT, no exception will be received in C#
-  RAISERROR('after select', 16, 1);
-END";
-
-        [TestMethod]
-        public void SP_RaiseError()
-        {
-            // create a test stored procedure.
-            connection.NonQuery(CommandType.Text, create_SP_RaiseError);
-
-            var result = connection.Query<ValueTypeTestModel>(CommandType.StoredProcedure, "SP_RaiseError", null);
-            Assert.AreEqual(2, result.Count, "Invalid output record count.");
-        }
-
-        #endregion
-
-        #region Implementing Events
-
-        const string create_table1 = @"
+            const string create_table = @"
 CREATE TABLE ##DBLog
 (
    Started datetime NULL,
@@ -191,10 +141,6 @@ CREATE TABLE ##DBLog
    Rows int NULL
 )";
 
-
-        [TestMethod]
-        public void WithControlEvent()
-        {
             // passes some state data to the events to control operation.
             var state = new ExecuteEventState();
 
@@ -202,7 +148,7 @@ CREATE TABLE ##DBLog
             state.StopNonQuery = true;
 
             // creates temp table at first.
-            connection.NonQuery(CommandType.Text, create_table1, state: state);
+            connection.NonQuery(CommandType.Text, create_table, state: state);
 
 
             Mapper.ExecutingEvent += Mapper_ExecutingEvent;
@@ -251,7 +197,5 @@ CREATE TABLE ##DBLog
                     args.Cancel = true;
             }
         }
-
-        #endregion
     }
 }
