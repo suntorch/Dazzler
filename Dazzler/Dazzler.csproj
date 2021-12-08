@@ -6,15 +6,24 @@
     <Authors>Amarsanaa Amgalan</Authors>
     <Company>Amarsanaa Amgalan</Company>
     <Description>A simple Micro-ORM supporting SQL Server, MySQL, Firebird, PostgreSQL and Oracle.</Description>
-    <Version>1.2.7</Version>
+    <Version>1.2.8</Version>
     <PackageTags>sql;query;orm;micro-orm;dotnet-orm</PackageTags>
     <PackageId>SunTorch.Dazzler</PackageId>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <RepositoryUrl></RepositoryUrl>
+    <RepositoryUrl>https://github.com/suntorch/Dazzler</RepositoryUrl>
     <Copyright>Amarsanaa Amgalan</Copyright>
     <PackageProjectUrl>https://github.com/suntorch/Dazzler.Wiki</PackageProjectUrl>
-    <AssemblyVersion>1.2.7.0</AssemblyVersion>
+    <AssemblyVersion>1.2.8.0</AssemblyVersion>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
