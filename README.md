@@ -443,11 +443,13 @@ public class CustomerController : ControllerBase
 {
    private CustomerDbContext _customerDbContext;
    
-   public UserController(CustomerDbContext customerDbContext)
+   // constructor
+   public CustomerController(CustomerDbContext customerDbContext)
    {
       _customerDbContext = customerDbContext;
    }
    
+   // action methods
    public IActionResult SearchCustomers()
    {
       var args = new CustomerSearchArgs
