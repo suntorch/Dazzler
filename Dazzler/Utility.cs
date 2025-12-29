@@ -538,7 +538,14 @@ namespace Dazzler
         #region Property Info
 
         static public PropertyInfo GetProperty(object instance, string name) => instance.GetType().GetProperty(name);
-        static public void SetPropertyValue(object instance, string name, object value) => GetProperty(instance, name)?.SetValue(instance, value);
+        static public void SetPropertyValue(object instance, string name, object value)
+        {
+            var fi = GetProperty(instance, name);
+            if (fi == null) return;
+            // safe type conversion.
+            object safeValue = Convert.ChangeType(value, fi.PropertyType);
+            fi?.SetValue(instance, safeValue);
+        }
 
         static public FieldInfo GetBackingFieldInfo(object instance, string name)
         {
@@ -560,7 +567,9 @@ namespace Dazzler
         {
             FieldInfo fi = GetBackingFieldInfo(instance, name);
             if (fi == null) return false;
-            fi.SetValue(instance, value);
+            // safe type conversion.
+            object safeValue = Convert.ChangeType(value, fi.FieldType);
+            fi.SetValue(instance, safeValue);
             return true;
         }
 

@@ -52,7 +52,7 @@ namespace Dazzler.Test
    public sealed class SqlServerClientProvider : DatabaseProvider
    {
       public override DbProviderFactory Factory => System.Data.SqlClient.SqlClientFactory.Instance;
-      public override string ConnectionString => @"Server=(local);Database=tempdb;User ID=sa;Password=Password12!";
+      public override string ConnectionString => @"Server=(local);Database=tempdb;User ID=sa;Password=admin";
    }
 
 
@@ -60,7 +60,7 @@ namespace Dazzler.Test
    public sealed class MySqlProvider : DatabaseProvider
    {
       public override DbProviderFactory Factory => null; // MySql.Data.MySqlClient.MySqlClientFactory.Instance;
-      public override string ConnectionString => @"Server=localhost;Database=test;Uid=root;Pwd=Password12!;";
+      public override string ConnectionString => @"Server=localhost;Database=test;Uid=root;Pwd=admin;";
 
 
 

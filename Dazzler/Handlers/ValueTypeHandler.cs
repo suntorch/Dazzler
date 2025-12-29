@@ -26,6 +26,5 @@ namespace Dazzler.Handlers
 
       public object Parse(object databaseValue, Type desiredType) => Utility.From(desiredType, databaseValue);
       #endregion
-
    }
 }

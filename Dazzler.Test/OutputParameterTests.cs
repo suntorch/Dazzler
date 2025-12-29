@@ -69,7 +69,7 @@ namespace Dazzler.Test
         {
             var args = new
             {
-                input = decimal.MaxValue,
+                input = 123456789.1234M,
                 output__out = 0M
             };
 
@@ -82,7 +82,7 @@ namespace Dazzler.Test
         {
             var args = new
             {
-                input = double.MaxValue,
+                input = 123456789.1234D,
                 output__out = 0D
             };
 
