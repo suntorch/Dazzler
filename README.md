@@ -479,7 +479,7 @@ You can see :eyes: and learn :green_book: from the test project [Dazzler.Test](h
 ## Installation
 Please use the following command in the NuGet Package Manager Console to install the library.
 ```
-Install-Package SunTorch.Dazzler -Version 1.2.9
+Install-Package SunTorch.Dazzler -Version 1.2.10
 ```
 
 Happy coding! 
